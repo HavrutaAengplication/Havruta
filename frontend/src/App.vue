@@ -1,7 +1,12 @@
 <template>
-  <body>
+  <router-view/>
+  <div>
+    <img src="@/assets/logo.png">
+  </div>
+  <div>
     <HelloWorld/>
-  </body>
+
+  </div>
 </template>
 
 <script>
@@ -9,6 +14,19 @@
   export default {
     components: {
       HelloWorld
+    },
+    data() {},
+    mounted() {
+      this.load();
+    },
+    methods: {
+      load() {
+        this.axios.get('/home').then(res => {
+          console.log("hihi");
+          console.log('get home');
+          console.log(res.data);
+        });
+      },
     }
 
   }

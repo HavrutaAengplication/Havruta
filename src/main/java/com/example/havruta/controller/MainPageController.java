@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/home")
 public class MainPageController {
-    @GetMapping("/hello")
+    @GetMapping("")
     public ResponseEntity<GroupListResponseDto> mainPageController(
             @RequestHeader("Authorization") String token
     ){

@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import PopUp from './CreateGroup.vue'
+import PopUp from '@/components/CreateGroup.vue'
 //import http from "../http"
 
 export default {
