@@ -2,6 +2,7 @@ package com.example.havruta.controller;
 
 import com.example.havruta.data.dto.GroupDto;
 import com.example.havruta.data.dto.GroupListResponseDto;
+import com.example.havruta.service.HavrutaService;
 import com.example.havruta.service.HavrutaServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/home")
 public class MainPageController {
-    private final HavrutaServiceImpl havrutaService;
+    private final HavrutaService havrutaService;
 
     @Autowired
-    public MainPageController(HavrutaServiceImpl havrutaService) {
+    public MainPageController(HavrutaService havrutaService) {
         this.havrutaService = havrutaService;
     }
 

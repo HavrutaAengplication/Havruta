@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class HavrutaServiceImpl {
+public class HavrutaServiceImpl implements HavrutaService{
     private final HavrutaDao havrutaDao;
 
     @Autowired
