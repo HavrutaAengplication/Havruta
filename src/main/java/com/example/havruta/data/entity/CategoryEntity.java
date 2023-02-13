@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryEntity{
+public class CategoryEntity {
     @Id
     @Column(name = "category_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

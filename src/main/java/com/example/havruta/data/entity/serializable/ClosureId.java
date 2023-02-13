@@ -8,7 +8,6 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import java.io.Serializable;
 
-@Entity
 @ToString
 @Getter
 @Setter
@@ -17,9 +16,9 @@ import java.io.Serializable;
 @Embeddable
 public class ClosureId implements Serializable {
 
-    @Column(name = "parent_Id")
+    @Column(name = "parent_ID")
     private int parentId;
 
-    @Column(name = "child_Id")
+    @Column(name = "child_ID")
     private int childId;
 }
