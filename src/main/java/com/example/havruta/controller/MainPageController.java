@@ -2,6 +2,9 @@ package com.example.havruta.controller;
 
 import com.example.havruta.data.dto.GroupDto;
 import com.example.havruta.data.dto.GroupListResponseDto;
+import com.example.havruta.service.HavrutaService;
+import com.example.havruta.service.HavrutaServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,16 +20,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/home")
 public class MainPageController {
-    @GetMapping("/hello")
+    private final HavrutaService havrutaService;
+
+    @Autowired
+    public MainPageController(HavrutaService havrutaService) {
+        this.havrutaService = havrutaService;
+    }
+
+    @GetMapping("")
     public ResponseEntity<GroupListResponseDto> mainPageController(
             @RequestHeader("Authorization") String token
     ){
-        GroupListResponseDto dto = new GroupListResponseDto();
-        GroupDto gd1 = new GroupDto(1,"First");
-        GroupDto gd2 = new GroupDto(2,"Second");
-        List<GroupDto> groupDto = new ArrayList<>(Arrays.asList(gd1, gd2));;
-
-        dto.setGroupList(groupDto);
+        GroupListResponseDto dto = havrutaService.mainPage();
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/mainpage"))
