@@ -1,35 +1,38 @@
 <template>
-  <router-view/>
   <div>
     <img src="@/assets/logo.png">
   </div>
   <div>
-    <HelloWorld/>
-
+    <router-link to="/">Go to Home</router-link>
   </div>
+  <div>
+    <router-view/>
+  </div>
+  <button @click="load">Get Data</button>
 </template>
 
 <script>
-  import HelloWorld from '@/components/HelloWorld.vue'
-  export default {
-    components: {
-      HelloWorld
-    },
-    data() {},
-    mounted() {
-      this.load();
-    },
-    methods: {
-      load() {
-        this.axios.get('/home').then(res => {
-          console.log("hihi");
-          console.log('get home');
-          console.log(res.data);
-        });
-      },
+import axios from 'axios'
+export default {
+  components: {
+  },
+  data() {
+    return {
+      res: "",
     }
+  },
+  mounted() {
+    // this.load();
+  },
+  methods: {
+    async load() {
+      const response = await axios.get("http://localhost:8080/api/data");
+      this.res = response;
+    },
 
   }
+
+}
 </script>
 <style>
 #app {
