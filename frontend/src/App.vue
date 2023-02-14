@@ -3,12 +3,11 @@
     <img src="@/assets/logo.png">
   </div>
   <div>
-    <router-link to="/">Go to Home</router-link>
+<!--    <router-link to="Home">Go to Home</router-link>-->
   </div>
   <div>
     <router-view/>
   </div>
-  <button @click="load">Get Data</button>
 </template>
 
 <script>

@@ -1,12 +1,14 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHistory} from "vue-router";
-import HelloWorld from "@/components/HelloWorld.vue";
+import MainPage from "@/components/MainPage.vue";
+import MyPage from "@/components/MyPage.vue";
 
 const app = createApp(App);
 
 const routes = [
-    { path: "/", component: HelloWorld},
+    { path: "/home", name: "Home", component: MainPage},
+    { path: "/mypage", name: "MyPage", component: MyPage },
 ]
 
 const router = createRouter({
