@@ -17,6 +17,6 @@ public interface CategoryClosureRepository extends JpaRepository<CategoryClosure
     @Query(value = "delete from category_closure as c where c.parent_ID = :curId or c.child_ID = :curId", nativeQuery = true)
     void removeCategory(@Param("curId") Integer curId);
 
-    @Query(value = "", nativeQuery = true)
+    @Query(value = "SELECT * from category_closure", nativeQuery = true)
     void updateCategory(@Param("curId") Integer curId, @Param("parentId") Integer parentId);
 }

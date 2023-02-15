@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class SoominServiceImpl {
+public class SoominServiceImpl implements SoominService{
     private final HavrutaDao havrutaDao;
     private final CategoryRepository categoryRepository;
     private final CategoryClosureRepository categoryClosureRepository;
@@ -160,6 +160,6 @@ public class SoominServiceImpl {
     public ResponseDto makeNewProblem(String token, ProblemDto problemDto, Integer groupId) {
         ResponseDto responseDto = new ResponseDto();
 
-        return null;
+        return responseDto;
     }
 }

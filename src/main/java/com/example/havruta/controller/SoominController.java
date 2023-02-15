@@ -43,7 +43,7 @@ public class SoominController {
         ResponseDto responseDto = soominService.deleteCategory(token, groupId, categoryId);
 
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .location(URI.create("/groups/" + groupId + "/admin"))
                 .body(responseDto);
     }
@@ -63,7 +63,7 @@ public class SoominController {
                 .body(responseDto);
     }
 
-    @GetMapping("/groups/{groupId}/categories/{categoryId}")
+    @GetMapping("/{groupId}/categories/{categoryId}")
     public ResponseEntity<CategoryProblemListDto> categoryProblemController(
             @RequestHeader("Authorization") String token,
             @PathVariable Integer groupId,
@@ -77,7 +77,7 @@ public class SoominController {
                 .body(responseDto);
     }
 
-    @PostMapping("/groups/{groupId}/newbie")
+    @PostMapping("/{groupId}/newbie")
     public ResponseEntity<ResponseDto> newbieController(
             @RequestHeader("Authorization") String token,
             @PathVariable Integer groupId
@@ -90,7 +90,7 @@ public class SoominController {
                 .body(responseDto);
     }
 
-    @PostMapping("/groups/{groupId}/problems")
+    @GetMapping("/{groupId}/problems")
     public ResponseEntity<CategoryListDto> newProblemPageController(
             @RequestHeader("Authorization") String token,
             @PathVariable Integer groupId
@@ -98,12 +98,12 @@ public class SoominController {
         CategoryListDto responseDto = soominService.getGroupCategory(groupId);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/groups/" + groupId + "/admin"))
                 .body(responseDto);
     }
 
-    @PostMapping("/groups/{groupId}/problems")
+    @PostMapping("/{groupId}/problems")
     public ResponseEntity<ResponseDto> newProblemController(
             @RequestHeader("Authorization") String token,
             @RequestBody ProblemDto reqbody,
