@@ -6,6 +6,8 @@ import com.example.havruta.data.entity.CategoryEntity;
 import com.example.havruta.data.entity.GroupEntity;
 import com.example.havruta.data.repository.CategoryClosureRepository;
 import com.example.havruta.data.repository.CategoryRepository;
+import com.example.havruta.data.repository.GroupRepository;
+import com.example.havruta.data.repository.ProblemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,24 +15,28 @@ import java.util.Optional;
 
 @Service
 public class SoominServiceImpl implements SoominService{
-    private final HavrutaDao havrutaDao;
+    private final GroupRepository groupRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryClosureRepository categoryClosureRepository;
 
+    private final ProblemRepository problemRepository;
+
     @Autowired
     public SoominServiceImpl(
-            HavrutaDao havrutaDao,
+            GroupRepository groupRepository,
             CategoryRepository categoryRepository,
-            CategoryClosureRepository categoryClosureRepository
+            CategoryClosureRepository categoryClosureRepository,
+            ProblemRepository problemRepository
     ) {
-        this.havrutaDao = havrutaDao;
+        this.groupRepository = groupRepository;
         this.categoryRepository = categoryRepository;
         this.categoryClosureRepository = categoryClosureRepository;
+        this.problemRepository = problemRepository;
     }
     public ResponseDto newCategory(String token, Integer groupId, CategoryInfoDto categoryInfoDto) {
         ResponseDto responseDto = new ResponseDto();
 
-        Optional<GroupEntity> groupEntity = havrutaDao.findGroupById(groupId);
+        Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
 
         if (groupEntity.isEmpty()) {
             responseDto.setMessage("Invalid groupId");
@@ -51,7 +57,7 @@ public class SoominServiceImpl implements SoominService{
                 else
                 */
             CategoryEntity newCategoryEntity = categoryRepository.save(new CategoryEntity(0, categoryInfoDto.getCategoryName()));
-            categoryClosureRepository.saveNewCategory(newCategoryEntity.getCategoryId(), categoryInfoDto.getParentCategoryId());
+            categoryClosureRepository.createCategory(newCategoryEntity.getCategoryId(), categoryInfoDto.getParentCategoryId());
 
             responseDto.setMessage("SUCCESS");
                 /*
@@ -65,7 +71,7 @@ public class SoominServiceImpl implements SoominService{
     public ResponseDto deleteCategory(String token, Integer groupId, Integer categoryId) {
         ResponseDto responseDto = new ResponseDto();
 
-        Optional<GroupEntity> groupEntity = havrutaDao.findGroupById(groupId);
+        Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
 
         if (groupEntity.isEmpty()) {
             responseDto.setMessage("Invalid groupId");
@@ -99,7 +105,7 @@ public class SoominServiceImpl implements SoominService{
     public ResponseDto updateCategory(String token, Integer groupId, CategoryInfoDto categoryInfoDto, Integer categoryId) {
         ResponseDto responseDto = new ResponseDto();
 
-        Optional<GroupEntity> groupEntity = havrutaDao.findGroupById(groupId);
+        Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
 
         if (groupEntity.isEmpty()) {
             responseDto.setMessage("Invalid groupId");
@@ -122,7 +128,7 @@ public class SoominServiceImpl implements SoominService{
                 target.get().setCategoryName(categoryInfoDto.getCategoryName());
                 categoryRepository.save(target.get());
                 /* update categoryClosureRepository */
-                categoryClosureRepository.updateCategory(categoryId, categoryInfoDto.getParentCategoryId());
+                categoryClosureRepository.updateCategory(categoryId, categoryInfoDto.getParentCategoryId(), groupEntity.get().getRootCategoryId().getCategoryId());
                 responseDto.setMessage("SUCCESS");
             }
                 /*
@@ -135,6 +141,35 @@ public class SoominServiceImpl implements SoominService{
     public CategoryProblemListDto getCategoryProblem(String token, Integer groupId, Integer categoryId) {
         CategoryProblemListDto responseDto = new CategoryProblemListDto();
 
+        Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
+
+        if (groupEntity.isEmpty()) {
+            /*
+            TODO: exception handling
+             */
+        } else {
+            /*
+            if(token is not group member){
+                TODO: exception handling
+            }
+            else{
+                */
+            Optional<CategoryEntity> target = categoryRepository.findById(categoryId);
+            if (target.isEmpty()) {
+                    /*
+                    For synchronization cases, such as two administrators are deleting the same category.
+                    One delete request would be successful, but the later request would have invalid category id.
+                     */
+                /*
+                TODO: exception handling
+                 */
+            } else {
+                /* TODO */
+            }
+                /*
+            }
+            */
+        }
 
         return responseDto;
     }
