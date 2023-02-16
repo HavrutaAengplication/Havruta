@@ -1,6 +1,7 @@
 package com.example.havruta.controller;
 
 import com.example.havruta.data.dto.*;
+import com.example.havruta.service.SoominService;
 import com.example.havruta.service.WonbinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,11 +12,15 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/groups/{groupId}")
-public class WonbinController {
+public class GroupsController {
     private final WonbinService wonbinService;
+    private final SoominService soominService;
 
     @Autowired
-    public WonbinController(WonbinService wonbinService) {this.wonbinService = wonbinService;}
+    public GroupsController(WonbinService wonbinService, SoominService soominService) {
+        this.wonbinService = wonbinService;
+        this.soominService = soominService;
+    }
 
     @GetMapping("")
     public ResponseEntity<SpecificGroupResponseDto> specificGroupController(
@@ -123,5 +128,103 @@ public class WonbinController {
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
                 .body(dto);
+    }
+
+
+    @PostMapping("/categories")
+    public ResponseEntity<ResponseDto> createCategory(
+            @PathVariable Integer groupId,
+            @RequestHeader("Authorization") String token,
+            @RequestBody CategoryInfoDto requestDto
+    ){
+        ResponseDto responseDto = soominService.newCategory(token, groupId, requestDto);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .location(URI.create("/groups/" + groupId + "/admin"))
+                .body(responseDto);
+    }
+
+    @DeleteMapping("/categories/{categoryId}")
+    public ResponseEntity<ResponseDto> deleteCategory(
+            @PathVariable Integer groupId,
+            @PathVariable Integer categoryId,
+            @RequestHeader("Authorization") String token
+    ){
+        ResponseDto responseDto = soominService.deleteCategory(token, groupId, categoryId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .location(URI.create("/groups/" + groupId + "/admin"))
+                .body(responseDto);
+    }
+
+    @PutMapping("/categories/{categoryId}")
+    public ResponseEntity<ResponseDto> updateCategory(
+            @PathVariable Integer groupId,
+            @PathVariable Integer categoryId,
+            @RequestHeader("Authorization") String token,
+            @RequestBody CategoryInfoDto requestDto
+    ){
+        ResponseDto responseDto = soominService.updateCategory(token, groupId, requestDto, categoryId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .location(URI.create("/groups/" + groupId + "/admin"))
+                .body(responseDto);
+    }
+
+    @GetMapping("/categories/{categoryId}")
+    public ResponseEntity<CategoryProblemListDto> categoryProblemController(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer groupId,
+            @PathVariable Integer categoryId
+    ){
+        CategoryProblemListDto responseDto = soominService.getCategoryProblem(token, groupId, categoryId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .location(URI.create("/groups/" + groupId + "/categories/" + categoryId))
+                .body(responseDto);
+    }
+
+    @PostMapping("/newbie")
+    public ResponseEntity<ResponseDto> newbieController(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer groupId
+    ){
+        ResponseDto responseDto = soominService.registerGroup(token,groupId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .location(URI.create("/groups/" + groupId))
+                .body(responseDto);
+    }
+
+    @GetMapping("/problems")
+    public ResponseEntity<CategoryListDto> newProblemPageController(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer groupId
+    ){
+        CategoryListDto responseDto = soominService.getGroupCategory(groupId);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .location(URI.create("/groups/" + groupId + "/admin"))
+                .body(responseDto);
+    }
+
+    @PostMapping("/problems")
+    public ResponseEntity<ResponseDto> newProblemController(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ProblemDto reqbody,
+            @PathVariable Integer groupId
+    ){
+        ResponseDto responseDto = soominService.makeNewProblem(token, reqbody, groupId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .location(URI.create("/groups/" + groupId))
+                .body(responseDto);
     }
 }
