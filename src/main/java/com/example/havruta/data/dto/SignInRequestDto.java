@@ -7,6 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class designateAdminRequestDto {
-    private Integer newAdminId;
+public class SignInRequestDto {
+    public String googleToken;
+    public String userName;
 }
