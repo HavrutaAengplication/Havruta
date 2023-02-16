@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from "vue-router";
 import MainPage from "@/components/MainPage.vue";
 import MyPage from "@/components/MyPage.vue";
-import Login from "@/components/GoogleLogin.vue"
+import Login from "@/components/KaKaoLogin.vue"
 
 const routes = [
     { path: "/home", name: "Home", component: MainPage},
