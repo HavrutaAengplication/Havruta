@@ -7,6 +7,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseDto {
-    public String message;
+public class UserNameDto {
+    private String userName;
 }

@@ -38,6 +38,7 @@
 
 <script>
 import PopUp from '@/components/CreateGroup.vue'
+import axios from 'axios'
 //import http from "../http"
 
 export default {
@@ -52,7 +53,8 @@ export default {
         { id: 2, name: '알고리즘' },
         { id: 3, name: '네트워크' }
       ],
-      searchTerm: ''
+      searchTerm: '',
+      groupList: "",
     };
   },
   computed: {
@@ -99,10 +101,11 @@ export default {
             alert(error)
           })
       },
+      */
     getGroup(){
       let params = {}
-        http
-          .get("/home", {
+      axios
+          .get("http://localhost:8080/api/home", {
             params: params,
           })
           .then(response => {
@@ -114,18 +117,22 @@ export default {
             alert(error)
           })
     },
-    */
+
     popupGroup() {
       this.popupview = (this.popupview) ? false : true
       // code to create a new group
+      /*
+      axios.
+        post("http://localhost:8080/api/home/new",
+             ...);
+       */
     },
     createGroup() {
       this.popupGroup();
-
     }
   },
   created(){
-    this.getGroup()
+    // this.getGroup()
   },
 };
 </script>

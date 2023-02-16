@@ -9,7 +9,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProblemDto {
+public class ProblemListDto {
+    private Integer groupId;
     private List<CategoryIdDto> categoryIdList;
     private Boolean problemType;
     private String problemQuestion;
