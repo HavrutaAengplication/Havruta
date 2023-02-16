@@ -17,8 +17,8 @@ import java.io.Serializable;
 public class ClosureId implements Serializable {
 
     @Column(name = "parent_ID")
-    private int parentId;
+    private Integer parentId;
 
     @Column(name = "child_ID")
-    private int childId;
+    private Integer childId;
 }
