@@ -26,6 +26,6 @@ public class CategoryClosureEntity {
     private CategoryEntity childId;
 
     @Column(name = "depth", nullable = false)
-    private int depth;
+    private Integer depth;
 }
 
