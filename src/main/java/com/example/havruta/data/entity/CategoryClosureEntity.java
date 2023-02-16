@@ -7,12 +7,19 @@ import java.io.Serializable;
 
 @Table(name = "category_closure")
 @Entity
+@IdClass(ClosureId.class)
 public class CategoryClosureEntity {
-    @EmbeddedId
-    private ClosureId closureId;
+    @Id
+    @ManyToOne(targetEntity = CategoryEntity.class)
+    @JoinColumn(name = "parent_ID", nullable = false)
+    private CategoryEntity parentId;
 
-    @Column(name = "depth")
+    @Id
+    @ManyToOne(targetEntity = CategoryEntity.class)
+    @JoinColumn(name = "child_ID", nullable = false)
+    private CategoryEntity childId;
+
+    @Column(name = "depth", nullable = false)
     private int depth;
 }
-
 
