@@ -1,7 +1,6 @@
 package com.example.havruta.controller;
 
 import com.example.havruta.data.dto.*;
-import com.example.havruta.service.HavrutaService;
 import com.example.havruta.service.SoominService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
