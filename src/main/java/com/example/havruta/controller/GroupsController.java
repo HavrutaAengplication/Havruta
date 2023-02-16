@@ -65,7 +65,7 @@ public class GroupsController {
     @PutMapping("/members")
     public ResponseEntity<ResponseDto> designateAdminController(
             @RequestHeader("Authorization") String token,
-            @RequestBody designateAdminRequestDto reqBody,
+            @RequestBody DesignateAdminRequestDto reqBody,
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
@@ -120,7 +120,7 @@ public class GroupsController {
     @PutMapping("")
     public ResponseEntity<ResponseDto> updateGroupController(
             @RequestHeader("Authorization") String token,
-            @RequestBody updateGroupRequestDto reqBody,
+            @RequestBody UpdateGroupRequestDto reqBody,
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
