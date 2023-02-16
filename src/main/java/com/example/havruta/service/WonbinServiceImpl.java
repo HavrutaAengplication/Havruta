@@ -3,6 +3,8 @@ package com.example.havruta.service;
 import com.example.havruta.data.dao.WonbinDao;
 import com.example.havruta.data.dto.*;
 import com.example.havruta.data.entity.GroupEntity;
+import com.example.havruta.errorAndException.ErrorCode;
+import com.example.havruta.errorAndException.NoGroupException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,8 @@ public class WonbinServiceImpl implements WonbinService{
         if(searchResult.isPresent()) {
             groupEntity = searchResult.get();
         }else {
-            groupEntity = searchResult.orElse(null);
+            //groupEntity = searchResult.orElse(null);
+            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
         }
 
         //일단 임의로 데이터 생성
