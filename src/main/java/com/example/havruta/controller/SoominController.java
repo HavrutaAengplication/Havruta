@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/groups")
+@RequestMapping("/groups2")
 public class SoominController {
     private final SoominService soominService;
 
