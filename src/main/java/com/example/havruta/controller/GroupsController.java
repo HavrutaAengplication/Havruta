@@ -3,6 +3,7 @@ package com.example.havruta.controller;
 import com.example.havruta.data.dto.*;
 import com.example.havruta.service.SoominService;
 import com.example.havruta.service.WonbinService;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +65,7 @@ public class GroupsController {
     @PutMapping("/members")
     public ResponseEntity<ResponseDto> designateAdminController(
             @RequestHeader("Authorization") String token,
-            @RequestBody designateAdminRequestDto reqBody,
+            @RequestBody DesignateAdminRequestDto reqBody,
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
@@ -119,7 +120,7 @@ public class GroupsController {
     @PutMapping("")
     public ResponseEntity<ResponseDto> updateGroupController(
             @RequestHeader("Authorization") String token,
-            @RequestBody updateGroupRequestDto reqBody,
+            @RequestBody UpdateGroupRequestDto reqBody,
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
