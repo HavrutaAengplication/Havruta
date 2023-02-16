@@ -12,9 +12,10 @@
   <div class="landing-page">
     <div class="upper-side">
       <div class="upper-left">
+        <button @click="getGroup">Get Data</button>
         <h3>Groups</h3>
         <ul>
-          <li v-for="group in groups" :key="group.id">{{ group.name }}</li>
+          <li v-for="group in groupList" :key="group.groupId">{{ group.groupName }}</li>
         </ul>
       </div>
       <div class="upper-right">
@@ -104,9 +105,11 @@ export default {
       */
     getGroup(){
       let params = {}
+      let headers = {"Authorization" : "temp"};
       axios
-          .get("http://localhost:8080/api/home", {
+          .get("http://localhost:8080/home", {
             params: params,
+            headers: headers
           })
           .then(response => {
             const { data } = response

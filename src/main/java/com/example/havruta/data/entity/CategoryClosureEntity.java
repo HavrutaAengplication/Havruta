@@ -1,12 +1,18 @@
 package com.example.havruta.data.entity;
 
 import com.example.havruta.data.entity.serializable.ClosureId;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Table(name = "category_closure")
 @Entity
+@ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @IdClass(ClosureId.class)
 public class CategoryClosureEntity {
     @Id
@@ -20,6 +26,6 @@ public class CategoryClosureEntity {
     private CategoryEntity childId;
 
     @Column(name = "depth", nullable = false)
-    private int depth;
+    private Integer depth;
 }
 
