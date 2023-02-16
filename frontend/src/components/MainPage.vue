@@ -114,7 +114,8 @@ export default {
           .then(response => {
             const { data } = response
             console.log(data)
-            this.groupList = data.items
+            console.log(data.groupList)
+            this.groupList = data.groupList
           })
           .catch(error => {
             alert(error)
