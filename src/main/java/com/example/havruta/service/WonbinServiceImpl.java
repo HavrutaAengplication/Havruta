@@ -35,8 +35,8 @@ public class WonbinServiceImpl implements WonbinService{
         //일단 임의로 데이터 생성
         List<CategoryDto> categoryDtoList = new ArrayList<CategoryDto>();
         CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setCatergoryId(10);
-        categoryDto.setCatergoryName("qwerasdf");
+        categoryDto.setCategoryId(10);
+        categoryDto.setCategoryName("qwerasdf");
         categoryDto.setDepth(15);
         categoryDtoList.add(categoryDto);
 
