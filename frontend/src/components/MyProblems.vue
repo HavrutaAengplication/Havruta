@@ -14,6 +14,7 @@ import axios from 'axios'
 export default {
   name:"MyProblems",
   components:{
+
   },
   mounted(){
     this.QGet();
@@ -22,17 +23,27 @@ export default {
     QGet(){
       let params = {}
       let headers = {"Authorization" : "temp"};
-      axios.get("http://localhost:8080/", {
+      axios.get("http://localhost:8080/mypage/problems/", {
         params: params,
         headers: headers
-      })
+      }).then(response => {
+        const { data } = response
+        this.questions = data.questions;
+      }).catch(error => {
+        alert(error)
+      });
+
     },
     QDelete(){
       let params = {}
       let headers = {"Authorization" : "temp"};
-      axios.delete("http://localhost:8080/", {
+      axios.delete("http://localhost:8080/mypage/problems/" + problemID, {
         params: params,
         headers: headers
+      }).then(response => {
+
+      }).catch(error => {
+        alert(error)
       })
     },
   },
@@ -42,6 +53,7 @@ export default {
         {id: 1, contents: 'adsf'},
         {id: 2, contents: 'ssss'},
       ],
+      problemID : 0,
     }
   }
 }
