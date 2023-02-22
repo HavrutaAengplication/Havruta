@@ -27,7 +27,7 @@
       <div v-if="selectedQuestionType === 'multiple-choice'">
         <div v-for="(choice, index) in choices" :key="index">
           <label>{{ index + 1 }}:</label>
-          <input v-bind:value="choices[index]">
+          <input v-model="choice">
           <button @click="addChoice">Add Choice</button>
         </div>
       </div>

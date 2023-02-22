@@ -4,7 +4,7 @@
     <div v-for="question in questions" :key="question.id">
       {{question.contents}}
       <button @click="OpenModifyPopUp"> MODIFY </button>
-      <button @click="QDelete()">DELETE</button>
+      <button @click="QDelete(question.id)"> DELETE </button>
     </div>
   </div>
 </template>
@@ -19,6 +19,12 @@ export default {
   mounted(){
     this.QGet();
   },
+  data() {
+    return {
+      questions : [],
+      problemID : 0,
+    }
+  },
   methods: {
     QGet(){
       let params = {}
@@ -32,30 +38,20 @@ export default {
       }).catch(error => {
         alert(error)
       });
-
     },
     QDelete(){
       let params = {}
       let headers = {"Authorization" : "temp"};
-      axios.delete("http://localhost:8080/mypage/problems/" + problemID, {
+      axios.delete("http://localhost:8080/mypage/problems/" + this.problemID, {
         params: params,
         headers: headers
       }).then(response => {
-
+        console.log(response)
       }).catch(error => {
         alert(error)
       })
     },
   },
-  data() {
-    return {
-      questions : [
-        {id: 1, contents: 'adsf'},
-        {id: 2, contents: 'ssss'},
-      ],
-      problemID : 0,
-    }
-  }
 }
 </script>
 
