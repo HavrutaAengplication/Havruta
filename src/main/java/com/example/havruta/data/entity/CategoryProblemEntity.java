@@ -1,13 +1,11 @@
 package com.example.havruta.data.entity;
 
 import com.example.havruta.data.entity.serializable.CategoryProblemId;
-import com.example.havruta.data.entity.serializable.MemberId;
-import com.example.havruta.data.repository.ProblemRepository;
 import lombok.*;
 
 import javax.persistence.*;
 
-@Table(name = "members")
+@Table(name = "category_problems")
 @Entity
 @ToString
 @Getter
