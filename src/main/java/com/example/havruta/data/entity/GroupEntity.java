@@ -21,9 +21,5 @@ public class GroupEntity{
 
     @OneToOne
     @JoinColumn(name = "root_category_ID", referencedColumnName = "category_ID")
-    //@Column(name = "root_category_ID")
     private CategoryEntity rootCategoryId;
-    //DB와의 통일성 위해 추가
-    //관련된 API 있다면 수정해야 할 듯
-    //예를 들어 newGroup? 찾아봤는데 service에 없길래 수정 못 함
 }

@@ -2,36 +2,36 @@ package com.example.havruta.service;
 
 import com.example.havruta.data.dao.HavrutaDao;
 import com.example.havruta.data.dto.*;
-import com.example.havruta.data.entity.CategoryEntity;
-import com.example.havruta.data.entity.GroupEntity;
-import com.example.havruta.data.repository.CategoryClosureRepository;
-import com.example.havruta.data.repository.CategoryRepository;
-import com.example.havruta.data.repository.GroupRepository;
-import com.example.havruta.data.repository.ProblemRepository;
+import com.example.havruta.data.entity.*;
+import com.example.havruta.data.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class SoominServiceImpl implements SoominService{
     private final GroupRepository groupRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryClosureRepository categoryClosureRepository;
-
     private final ProblemRepository problemRepository;
+    private final CategoryProblemRepository categoryProblemRepository;
 
     @Autowired
     public SoominServiceImpl(
             GroupRepository groupRepository,
             CategoryRepository categoryRepository,
             CategoryClosureRepository categoryClosureRepository,
-            ProblemRepository problemRepository
+            ProblemRepository problemRepository,
+            CategoryProblemRepository categoryProblemRepository
     ) {
         this.groupRepository = groupRepository;
         this.categoryRepository = categoryRepository;
         this.categoryClosureRepository = categoryClosureRepository;
         this.problemRepository = problemRepository;
+        this.categoryProblemRepository = categoryProblemRepository;
     }
     public ResponseDto newCategory(String token, Integer groupId, CategoryInfoDto categoryInfoDto) {
         ResponseDto responseDto = new ResponseDto();
@@ -46,20 +46,39 @@ public class SoominServiceImpl implements SoominService{
                 responseDto.setMessage("Not group administrator");
             }
             else{
+            */
                 Integer parentCategoryId = categoryInfoDto.getParentCategoryId();
                 String categoryName = categoryInfoDto.getCategoryName();
 
-                find if categoryName already exists as a child of parentCategoryId
-                if true
+                /* check if categoryName already exists as a child of parentCategoryId (if true, flag is true) */
+                List<CategoryClosureEntity> tmpList = categoryClosureRepository.findById_ParentId(parentCategoryId);
+
+                boolean flag = false;
+
+                for(CategoryClosureEntity c : tmpList) {
+                    Optional<CategoryEntity> tmpCategoryEntity = categoryRepository.findById(c.getChild().getCategoryId());
+                    if(tmpCategoryEntity.isPresent()) {
+                        if (tmpCategoryEntity.get().getCategoryName().equals(categoryInfoDto.getCategoryName())) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(flag) {
                     responseDto.setMessage("Same category name already exists");
+                }
+                else{
+                    CategoryEntity categoryEntity = new CategoryEntity();
+                    categoryEntity.setCategoryName(categoryInfoDto.getCategoryName());
 
-                => 이 작업은 FE에서 해주는 것이 나을 수도. (redirect 없이 FE에서 경고 표시만)
-                else
-                */
-            CategoryEntity newCategoryEntity = categoryRepository.save(new CategoryEntity(0, categoryInfoDto.getCategoryName()));
-            categoryClosureRepository.createCategory(newCategoryEntity.getCategoryId(), categoryInfoDto.getParentCategoryId());
+                    CategoryEntity newCategoryEntity = categoryRepository.save(categoryEntity);
+                    newCategoryEntity.getCategoryId();
+                    categoryInfoDto.getParentCategoryId();
+                    categoryClosureRepository.createCategory(newCategoryEntity.getCategoryId(), categoryInfoDto.getParentCategoryId());
 
-            responseDto.setMessage("SUCCESS");
+                    responseDto.setMessage("SUCCESS");
+                }
                 /*
             }
             */
@@ -164,11 +183,45 @@ public class SoominServiceImpl implements SoominService{
                 TODO: exception handling
                  */
             } else {
-                /* TODO */
+                List<CategoryProblemEntity> categoryProblemEntityList = categoryProblemRepository.findAllByCategoryEntity_CategoryId(target.get());
+/*
+                List<Integer> problemIdList = new ArrayList<>();
+                for(CategoryProblemEntity c : categoryProblemEntityList){
+                    problemIdList.add(c.getProblemId().getProblemId());
+                }
+
+                List<ProblemEntity> problemEntityList = problemRepository.findAllById(problemIdList);
+                List<CategoryProblemDto> categoryProblemDtoList = new ArrayList<>();
+
+                for(ProblemEntity e : problemEntityList){
+                    List<ItemDto> itemList = new ArrayList<>();
+                    List<ImageDto> imageList = new ArrayList<>();
+
+                    for(ItemEntity i : e.getProblemCandidate()){
+                        itemList.add(new ItemDto(i.getItem()));
+                    }
+
+                    for(ImageEntity m : e.getProblemImage()){
+                        imageList.add(new ImageDto(m.getImage()));
+                    }
+
+                    CategoryProblemDto categoryProblemDto = new CategoryProblemDto(
+                            e.getProblemId(),
+                            e.getProblemType(),
+                            e.getProblemQuestion(),
+                            itemList,
+                            e.getProblemAnswer(),
+                            imageList
+                    );
+
+                    categoryProblemDtoList.add(categoryProblemDto);
+                }
+
+                responseDto.setCategoryProblemList(categoryProblemDtoList);
+            }*/
+
             }
-                /*
-            }
-            */
+
         }
 
         return responseDto;
