@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.example.havruta.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.example.havruta.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/havruta.main.iml" filepath="$PROJECT_DIR$/.idea/modules/havruta.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/havruta.test.iml" filepath="$PROJECT_DIR$/.idea/modules/havruta.test.iml" />
     </modules>
