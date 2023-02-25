@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/home")
 public class MainPageController {
     private final HavrutaService havrutaService;
-
     @Autowired
     public MainPageController(HavrutaService havrutaService) {
         this.havrutaService = havrutaService;

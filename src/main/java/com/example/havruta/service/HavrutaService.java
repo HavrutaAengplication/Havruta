@@ -6,4 +6,5 @@ public interface HavrutaService {
 
     public ResponseDto signIn(SignInRequestDto reqbody);
     public GroupListResponseDto mainPage();
+    public UserNameDto login(LoginRequestDto req);
 }

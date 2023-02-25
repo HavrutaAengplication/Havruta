@@ -4,8 +4,10 @@ import com.example.havruta.data.dao.HavrutaDao;
 import com.example.havruta.data.dto.*;
 import com.example.havruta.data.entity.CategoryEntity;
 import com.example.havruta.data.entity.GroupEntity;
+import com.example.havruta.data.entity.UserEntity;
 import com.example.havruta.data.repository.CategoryClosureRepository;
 import com.example.havruta.data.repository.CategoryRepository;
+import com.example.havruta.security.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -22,38 +24,14 @@ import java.util.Optional;
 @Service
 public class HavrutaServiceImpl implements HavrutaService {
     private final HavrutaDao havrutaDao;
-    private final CategoryRepository categoryRepository;
-    private final CategoryClosureRepository categoryClosureRepository;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public HavrutaServiceImpl(
-            HavrutaDao havrutaDao,
-            CategoryRepository categoryRepository,
-            CategoryClosureRepository categoryClosureRepository
-    ) {
+    public HavrutaServiceImpl(HavrutaDao havrutaDao, JwtUtil jwtUtil) {
         this.havrutaDao = havrutaDao;
-        this.categoryRepository = categoryRepository;
-        this.categoryClosureRepository = categoryClosureRepository;
+        this.jwtUtil = jwtUtil;
     }
 
-    /*
-    public Integer getIdFromAuthToken(String authorizationHeader){
-        validationAuthorizationHeader(authorizationHeader); // (1)
-        String token = extractToken(authorizationHeader)
-    }
-    public String makeJwtToken(Integer userId) {
-        Date now = new Date();
-
-        return Jwts.builder()
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setIssuer("fresh")
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis()))
-                .claim("userId", userId)
-                .signWith(SignatureAlgorithm.HS256, "secret")
-                .compact();
-    }
-*/
     public ResponseDto signIn(SignInRequestDto reqbody){
         /*
             1. reqbody.googleToken validation
@@ -63,6 +41,21 @@ public class HavrutaServiceImpl implements HavrutaService {
         ResponseDto dto = new ResponseDto();
         return dto;
     }
+
+    public UserNameDto login(LoginRequestDto req){
+        String userEmail = "hosung_user_email";
+        UserNameDto dto = new UserNameDto();
+        Optional<UserEntity> userEntity = havrutaDao.findByEmail(userEmail);
+
+        if(userEntity.isPresent()) {
+            dto.setUserName(userEntity.get().getUserName());
+        }
+        else{
+            dto.setUserName("NOT PRESENT");
+        }
+        return dto;
+    }
+
     public GroupListResponseDto mainPage() {
         List<GroupEntity> groupEntityList = havrutaDao.findAllGroup();
         List<GroupDto> groupDtoList = new ArrayList<GroupDto>();
