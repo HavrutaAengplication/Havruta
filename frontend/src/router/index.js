@@ -15,7 +15,7 @@ const routes = [
     { path: "/login", name: "Login", component: Login},
     { path: '/groups/:groupId', component: GroupPage },
     { path: '/groups/:groupId/categories/:categoryId', component: CategoryProblems},
-    { path: '/groups/:groupId/admin', component: GroupAdmin},
+    { path: '/groups/:groupId/admin', name: 'admin', component: GroupAdmin},
     { path: "/problems", name: "MyProblem", component: MyProblems},
     { path: "/groups", name: "GroupPage", component: GroupPage},
     // { path: "/createproblem", component: CreateProblem },
