@@ -28,7 +28,7 @@
 import groupData from '@/groupData.json'
 
 export default {
-  name: "GroupPageTest",
+  name: "GroupPage",
   data() {
     return {
       categories: [
