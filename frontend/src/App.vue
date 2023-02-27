@@ -3,7 +3,7 @@
     <img src="@/assets/logo.png">
   </div>
   <div>
-    <router-link to="Home">Go to Home</router-link>
+    <router-link to="/home">Go to Home</router-link>
   </div>
   <div>
     <router-view/>

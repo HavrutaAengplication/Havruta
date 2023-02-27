@@ -2,11 +2,16 @@ import {createRouter, createWebHistory} from "vue-router";
 import MainPage from "@/components/MainPage.vue";
 import MyPage from "@/components/MyPage.vue";
 import Login from "@/components/KaKaoLogin.vue"
+import GroupPageTest from "@/components/GroupPageTest.vue";
+import CategoryPageTest from "@/components/CategoryPageTest.vue";
 
 const routes = [
     { path: "/home", name: "Home", component: MainPage},
     { path: "/mypage", name: "MyPage", component: MyPage },
     { path: "/login", name: "Login", component: Login},
+    { path: '/groups/:groupId', component: GroupPageTest },
+    { path: '/groups/:groupId/category/:categoryId', component: CategoryPageTest},
+
 ]
 
 const router = createRouter({
