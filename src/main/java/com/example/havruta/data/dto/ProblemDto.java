@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProblemDto {
     private List<CategoryIdDto> categoryIdList;
-    private Boolean problemType;
+    private Integer problemType;
     private String problemQuestion;
     private List<ItemDto> problemCandidate;
     private String problemAnswer;

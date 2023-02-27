@@ -12,6 +12,6 @@ import java.util.List;
 public class SpecificGroupResponseDto {
     private String groupName;
     private List<CategoryDto> categoryList;
-    private Boolean isAdmin;
-    private Boolean isMember;
+    private Integer isAdmin;
+    private Integer isMember;
 }

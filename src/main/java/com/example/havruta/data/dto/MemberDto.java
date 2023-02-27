@@ -10,5 +10,5 @@ import lombok.*;
 public class MemberDto {
     private Integer userId;
     private String userName;
-    private boolean isAdmin;
+    private Integer isAdmin;
 }
