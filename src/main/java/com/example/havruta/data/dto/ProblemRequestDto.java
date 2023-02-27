@@ -9,8 +9,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryProblemDto{
-    private Integer problemId;
+public class ProblemRequestDto {
+    private List<CategoryIdRequestDto> categoryIdList;
     private Integer problemType;
     private String problemQuestion;
     private List<ItemDto> problemCandidate;

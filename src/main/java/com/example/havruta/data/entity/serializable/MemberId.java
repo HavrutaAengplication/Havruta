@@ -1,4 +1,4 @@
-package com.example.havruta.data.entity;
+package com.example.havruta.data.entity.serializable;
 
 import lombok.*;
 
