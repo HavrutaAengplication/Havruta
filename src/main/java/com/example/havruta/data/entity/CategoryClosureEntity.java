@@ -13,19 +13,18 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(ClosureId.class)
 public class CategoryClosureEntity {
-    @Id
-    @ManyToOne(targetEntity = CategoryEntity.class)
-    @JoinColumn(name = "parent_ID", nullable = false)
-    private CategoryEntity parentId;
+    @EmbeddedId
+    private ClosureId id;
 
-    @Id
     @ManyToOne(targetEntity = CategoryEntity.class)
-    @JoinColumn(name = "child_ID", nullable = false)
-    private CategoryEntity childId;
+    @MapsId("parentId")
+    private CategoryEntity parent;
+
+    @ManyToOne(targetEntity = CategoryEntity.class)
+    @MapsId("childId")
+    private CategoryEntity child;
 
     @Column(name = "depth", nullable = false)
     private Integer depth;
 }
-

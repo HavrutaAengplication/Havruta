@@ -18,8 +18,9 @@ public class ProblemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int problemId;
 
-    @Column(name = "user_ID")
-    private Integer userId;
+    @ManyToOne(targetEntity = UserEntity.class)
+    @JoinColumn(name = "user_ID", nullable = false)
+    private UserEntity userId;
 
     @Column(name = "type")
     private String problemType;

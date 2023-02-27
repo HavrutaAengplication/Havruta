@@ -21,4 +21,16 @@ public class ClosureId implements Serializable {
 
     @Column(name = "child_ID")
     private Integer childId;
+
+    @Override
+    public boolean equals(Object o){
+        if(o == this){
+            return true;
+        }
+        if(o instanceof ClosureId == false){
+            return false;
+        }
+        final ClosureId o2 = (ClosureId) o;
+        return o2.getChildId().equals(getChildId()) && o2.getParentId().equals(getParentId());
+    }
 }
