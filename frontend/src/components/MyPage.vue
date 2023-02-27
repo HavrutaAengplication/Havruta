@@ -13,7 +13,9 @@
   <div>
     <p>My Groups</p>
     <ul>
-      <li v-for="group in myGroups" :key="group.id">{{ group.name }}</li>
+      <li v-for="group in myGroups" :key="group.id">
+        <router-link :to="'/groups/' + group.id">{{ group.name }}</router-link>
+      </li>
     </ul>
   </div>
   <div>

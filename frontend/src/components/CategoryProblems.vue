@@ -1,14 +1,14 @@
 <template>
   <div v-for="(problem, index) in problems" :key="index">
-    <div class="problem">
-      <div class="problem-number">
-        <h2>Problem {{ index + 1 }}</h2>
+    <div class="problem-number">
+      <h2>Problem {{ index + 1 }}</h2>
 <!--        <div v-if="problem.correct" class="answer-correct">-->
 <!--          O-->
 <!--        </div>-->
-      </div>
-      <p class="problem-description">{{ problem.problemQuestion }}</p>
     </div>
+    <p class="problem-description">{{ problem.problemQuestion }}</p>
+
+    <div><h1></h1></div>
 
     <div class="items">
       <div v-if="problem.problemType==0">
@@ -23,9 +23,12 @@
       </div>
       <div v-else>
         <label></label>
-        <input v-model="problem.userAnswer" />
+        <input v-model="problem.userAnswer" placeholder="Your Answer" />
       </div>
     </div>
+
+    <div><h1></h1></div>
+
     <div class="left-align">
       <button @click="scoreProblem(index)">Score</button>
     </div>
@@ -155,6 +158,7 @@ export default {
   margin: 0;
   font-size: 2rem;
   font-weight: bold;
+  text-align: left;
 }
 
 .answer-correct {
