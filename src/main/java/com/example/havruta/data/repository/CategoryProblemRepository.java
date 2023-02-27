@@ -11,4 +11,6 @@ import java.util.Optional;
 
 public interface CategoryProblemRepository extends JpaRepository<CategoryProblemEntity, CategoryProblemId> {
     public List<CategoryProblemEntity> findAllByCategoryEntity_CategoryId(CategoryEntity categoryEntity);
+
+    public List<CategoryProblemEntity> findAllById_CategoryId(Integer categoryIdList);
 }
