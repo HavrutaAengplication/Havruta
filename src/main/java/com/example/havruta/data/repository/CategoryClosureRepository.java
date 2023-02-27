@@ -9,12 +9,11 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 public interface CategoryClosureRepository extends JpaRepository<CategoryClosureEntity, ClosureId> {
 
     public List<CategoryClosureEntity> findById_ParentId(Integer parentId);
-    public Optional<CategoryClosureEntity> findById_ChildId(Integer childId);
+
     /*
         Insert rows for a new category
         ex. new category id : 8
