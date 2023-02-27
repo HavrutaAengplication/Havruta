@@ -6,6 +6,9 @@
     <router-link to="/home">Go to Home</router-link>
   </div>
   <div>
+    <router-link to="/categoryproblems">CategoryProblems</router-link>
+  </div>
+  <div>
     <router-view/>
   </div>
 </template>
