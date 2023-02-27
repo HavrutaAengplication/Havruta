@@ -6,10 +6,16 @@ import com.example.havruta.data.entity.CategoryEntity;
 import com.example.havruta.data.entity.GroupEntity;
 import com.example.havruta.data.repository.CategoryClosureRepository;
 import com.example.havruta.data.repository.CategoryRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +36,33 @@ public class HavrutaServiceImpl implements HavrutaService {
         this.categoryClosureRepository = categoryClosureRepository;
     }
 
+    /*
+    public Integer getIdFromAuthToken(String authorizationHeader){
+        validationAuthorizationHeader(authorizationHeader); // (1)
+        String token = extractToken(authorizationHeader)
+    }
+    public String makeJwtToken(Integer userId) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer("fresh")
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis()))
+                .claim("userId", userId)
+                .signWith(SignatureAlgorithm.HS256, "secret")
+                .compact();
+    }
+*/
+    public ResponseDto signIn(SignInRequestDto reqbody){
+        /*
+            1. reqbody.googleToken validation
+            2. reqbody.googleToken 에서 Email 추출.
+            3. email + reqbody.userName 으로 users에 저장
+        */
+        ResponseDto dto = new ResponseDto();
+        return dto;
+    }
     public GroupListResponseDto mainPage() {
         List<GroupEntity> groupEntityList = havrutaDao.findAllGroup();
         List<GroupDto> groupDtoList = new ArrayList<GroupDto>();

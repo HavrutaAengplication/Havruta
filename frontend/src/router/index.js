@@ -4,6 +4,9 @@ import MyPage from "@/components/MyPage.vue";
 import Login from "@/components/KaKaoLogin.vue"
 import GroupPageTest from "@/components/GroupPageTest.vue";
 import CategoryPageTest from "@/components/CategoryPageTest.vue";
+import MyProblems from "@/components/MyProblems.vue"
+import GroupPage from "@/components/GroupPage.vue"
+//import CreateGroup from "@/components/CategoryView.vue"
 
 const routes = [
     { path: "/home", name: "Home", component: MainPage},
@@ -12,6 +15,8 @@ const routes = [
     { path: '/groups/:groupId', component: GroupPageTest },
     { path: '/groups/:groupId/category/:categoryId', component: CategoryPageTest},
 
+    { path: "/problems", name: "MyProblem", component: MyProblems},
+    { path: "/groups", name: "GroupPage", component: GroupPage},
 ]
 
 const router = createRouter({
