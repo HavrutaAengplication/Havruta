@@ -12,6 +12,30 @@
 
 <script>
 import CategoryView from "@/components/CategoryView.vue";
+import { ref } from 'vue'
+
+const categoryData = ref({
+  name: 'Categories',
+  children: [
+    { name: 'hello' },
+    { name: 'world' },
+    {
+      name: 'child folder',
+      children: [
+        {
+          name: 'child folder',
+          children: [{ name: 'hello' }, { name: 'world' }]
+        },
+        { name: 'hello' },
+        { name: 'world' },
+        {
+          name: 'child folder',
+          children: [{ name: 'hello' }, { name: 'world' }]
+        }
+      ]
+    }
+  ]
+})
 
 export default {
   name: "GroupPage",
@@ -20,7 +44,7 @@ export default {
   },
   data(){
     return {
-      categoryData : 0,
+      categoryData,
       isAdmin: true
     }
   },
