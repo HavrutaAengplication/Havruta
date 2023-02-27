@@ -4,7 +4,7 @@
       <br>
     </div>
     <div class="box">
-      <button v-if="isAdmin"><router-link :to="'/group/' + this.group.id + '/admin'"/>Admin Settings</button>
+      <button v-if="isAdmin" @click="goToAdmin">Admin Settings</button>
     </div>
   </div>
 
@@ -63,11 +63,21 @@ export default {
       let groupId = parseInt(this.$route.params.groupId);
       this.group = groupData.groups.find(group => group.id === groupId);
       this.isAdmin = true;
+    },
+    goToAdmin() {
+      console.log('GroupPage isAdmin: ' + this.isAdmin);
+      this.$router.push({
+        name: 'admin',
+        query: { isAdmin: this.isAdmin },
+      });
     }
   },
   created() {
     this.initGroup()
   },
+  mounted() {
+    this.initGroup()
+  }
 
 }
 </script>
