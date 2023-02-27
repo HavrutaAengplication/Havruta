@@ -15,7 +15,6 @@ public interface CategoryClosureRepository extends JpaRepository<CategoryClosure
 
     public List<CategoryClosureEntity> findById_ParentId(Integer parentId);
     public Optional<CategoryClosureEntity> findById_ChildId(Integer childId);
-
     /*
         Insert rows for a new category
         ex. new category id : 8

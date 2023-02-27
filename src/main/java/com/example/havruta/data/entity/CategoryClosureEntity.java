@@ -25,6 +25,6 @@ public class CategoryClosureEntity {
     @MapsId("childId")
     private CategoryEntity child;
 
-    @Column(name = "depth", nullable = false)
+    @Column
     private Integer depth;
 }
