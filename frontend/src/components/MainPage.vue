@@ -15,7 +15,7 @@
         <button @click="getGroup">Get Data</button>
         <h3>Groups</h3>
         <ul>
-          <li v-for="group in groupList" :key="group.groupId">{{ group.groupName }}</li>
+          <li v-for="group in testGroups" :key="group.id">{{ group.name }}</li>
         </ul>
       </div>
       <div class="upper-right">
@@ -41,6 +41,7 @@
 import PopUp from '@/components/CreateGroup.vue'
 import axios from 'axios'
 //import http from "../http"
+import groupData from '@/groupData.json'
 
 export default {
   components:{
@@ -63,6 +64,9 @@ export default {
       return this.groups.filter(group => {
         return group.name.toLowerCase().includes(this.searchTerm.toLowerCase());
       });
+    },
+    testGroups() {
+      return groupData.groups
     }
   },
   methods: {

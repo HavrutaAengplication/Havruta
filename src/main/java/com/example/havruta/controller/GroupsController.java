@@ -85,7 +85,7 @@ public class GroupsController {
         //넘겨줄 때 사용자 정보도 넘어가야 됨
         ResponseDto dto = wonbinService.dropMember(userId, groupId);
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 //.location(URI.create("/"))
                 .body(dto);
     }
