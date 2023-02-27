@@ -5,9 +5,11 @@
   </div>
   <div>
     <h2>Categories</h2>
-    <router-link to="`${categoryURL}`" v-for="category in categories" :key="category.id">
-      {{ category.name }}<br/>
-    </router-link>
+    <ul>
+      <li v-for="category in categories" :key="category.id">
+        <router-link :to="'/groups/' + this.group.id + '/categories/' + category.id">{{category.name}}</router-link>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -44,9 +46,6 @@ export default {
     }
   },
   computed: {
-    categoryURL(category) {
-      return ["http://localhost:8081", "groups", this.group.id, "categories", category.id].join("/");
-    }
   },
   methods: {
     initGroup() {
