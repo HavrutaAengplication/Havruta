@@ -2,10 +2,9 @@ import {createRouter, createWebHistory} from "vue-router";
 import MainPage from "@/components/MainPage.vue";
 import MyPage from "@/components/MyPage.vue";
 import Login from "@/components/KaKaoLogin.vue"
-import GroupPageTest from "@/components/GroupPageTest.vue";
+import GroupPage from "@/components/GroupPage.vue";
 // import CategoryPageTest from "@/components/CategoryPageTest.vue";
 import MyProblems from "@/components/MyProblems.vue"
-import GroupPage from "@/components/GroupPage.vue"
 // import CreateProblem from "@/components/CreateProblem.vue";
 //import CreateGroup from "@/components/CategoryView.vue"
 import CategoryProblems from "@/components/CategoryProblems.vue"
@@ -14,7 +13,7 @@ const routes = [
     { path: "/home", name: "Home", component: MainPage},
     { path: "/mypage", name: "MyPage", component: MyPage },
     { path: "/login", name: "Login", component: Login},
-    { path: '/groups/:groupId', component: GroupPageTest },
+    { path: '/groups/:groupId', component: GroupPage },
     { path: '/groups/:groupId/categories/:categoryId', component: CategoryProblems},
 
     { path: "/problems", name: "MyProblem", component: MyProblems},
