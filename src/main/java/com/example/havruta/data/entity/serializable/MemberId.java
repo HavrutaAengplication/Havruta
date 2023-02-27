@@ -1,4 +1,4 @@
-package com.example.havruta.data.entity;
+package com.example.havruta.data.entity.serializable;
 
 import lombok.*;
 
@@ -14,6 +14,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Embeddable
 public class MemberId implements Serializable {
+
     @Column(name = "user_ID")
     private Integer userId;
 
@@ -25,10 +26,10 @@ public class MemberId implements Serializable {
         if(o == this){
             return true;
         }
-        if(!(o instanceof MemberId)){
+        if(!(o instanceof com.example.havruta.data.entity.serializable.MemberId)){
             return false;
         }
-        final MemberId o2 = (MemberId) o;
+        final com.example.havruta.data.entity.serializable.MemberId o2 = (com.example.havruta.data.entity.serializable.MemberId) o;
         return o2.getUserId().equals(getUserId()) && o2.getGroupId().equals(getGroupId());
     }
 
@@ -36,4 +37,5 @@ public class MemberId implements Serializable {
     public int hashCode() {
         return Objects.hash(userId, groupId);
     }
+
 }

@@ -7,8 +7,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberDto {
-    private Integer userId;
-    private String userName;
-    private Integer isAdmin;
+public class CategoryIdRequestDto {
+    private Integer categoryId;
 }
