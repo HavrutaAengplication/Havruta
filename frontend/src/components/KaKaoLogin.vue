@@ -1,11 +1,14 @@
 <template>
   <section class="test">
     <div v-on:click="kakaoLoginBtn">카카오 연동</div>
+    <div>
+      <button @click="loginBtn">TestButton</button>
+    </div>
   </section>
 </template>
 
 <script>
-
+import axios from 'axios'
 export default {
   name: "KakaoLogin",
   mounted() {
@@ -14,6 +17,10 @@ export default {
 
   },
   methods: {
+    loginBtn() {
+        axios.get("https://kauth.kakao.com/")
+    },
+
     kakaoLoginBtn:function(){
       const token = window.Kakao.Auth.getAccessToken();
       if (token) {

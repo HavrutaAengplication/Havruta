@@ -1,0 +1,38 @@
+{
+"problems": [
+  {
+    "problemId": 1,
+    "problemType": 0,
+    "problemQuestion": "Q1",
+    "problemCandidateList": [
+      {
+        "item1": "I1",
+        "item2": "I2"
+      }
+    ],
+    "problemAnswer": "item1",
+    "problemImage": [
+      {
+        "image": "string"
+      }
+    ]
+  },
+  {
+    "problemId": 2,
+    "problemType": 0,
+    "problemQuestion": "Q2",
+    "problemCandidateList": [
+      {
+        "item1": "I1",
+        "item2": "I2"
+      }
+    ],
+    "problemAnswer": "item1",
+    "problemImage": [
+      {
+        "image": "string"
+      }
+    ]
+  }
+  ]
+}

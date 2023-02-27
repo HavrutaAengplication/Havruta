@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryProblemDto{
-    private String problemId;
+    private Integer problemId;
     private String problemType;
     private String problemQuestion;
     private List<ItemDto> problemCandidate;
