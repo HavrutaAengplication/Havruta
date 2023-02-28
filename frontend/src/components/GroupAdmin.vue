@@ -20,7 +20,7 @@
 
 <script>
 import axios from 'axios'
-import {BASE_URL} from "@/config";
+import {BASE_URL, HEADERS} from "@/config";
 import ModifyGroupInfo from '@/components/ModifyGroupInfo.vue'
 
 export default {
@@ -67,11 +67,9 @@ export default {
       console.log("New Group Name: " + name);
       axios.
         put(`${BASE_URL}/groups/${this.groupId}`,
+          { newGroupName: name },
           {
-            headers: this.headers,
-            body: {
-              newGroupName: name
-            }
+            headers: HEADERS
           })
           .then(response => {
             const data = response

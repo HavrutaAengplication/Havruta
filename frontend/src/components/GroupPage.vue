@@ -10,14 +10,15 @@
 
   <div class="parallel">
     <div class="box">
-      <p>groupName: {{group.name}}</p>
-      <p>groupId: {{group.id}}</p>
+      <p>groupName: {{groupName}}</p>
+      <p>groupId: {{groupId}}</p>
     </div>
     <div class="box">
       <h2>Categories</h2>
       <ul>
-        <li v-for="category in categories" :key="category.id">
-          <router-link :to="'/groups/' + this.group.id + '/categories/' + category.id">{{category.name}}</router-link>
+        <li v-for="category in categories" :key="category.categoryId">
+          <router-link :to="'/groups/' + this.group.id + '/categories/' + category.categoryId">
+            {{category.categoryName}}</router-link>
         </li>
       </ul>
     </div>
@@ -25,44 +26,53 @@
 </template>
 
 <script>
-import groupData from '@/groupData.json'
-
+import axios from 'axios'
+import {BASE_URL, HEADERS} from "@/config";
 export default {
   name: "GroupPage",
   data() {
     return {
       categories: [
         {
-          id: 1,
-          name: "C1",
+          categoryId: 1,
+          categoryName: "C1",
           depth: 1,
         },
         {
-          id: 2,
-          name: "C2",
+          categoryId: 2,
+          categoryName: "C2",
           depth: 2,
         },
         {
-          id: 3,
-          name: "C3",
+          categoryId: 3,
+          categoryName: "C3",
           depth: 3,
         }
       ],
-      group: {
-        id: "",
-        name: "",
-      },
+      groupName: "",
       isAdmin: false,
       isMember: false,
     }
   },
   computed: {
+    groupId() {
+      return this.$route.params.groupId
+    }
   },
   methods: {
-    initGroup() {
-      let groupId = parseInt(this.$route.params.groupId);
-      this.group = groupData.groups.find(group => group.id === groupId);
-      this.isAdmin = true;
+    getGroupData() {
+      axios
+          .get(`${BASE_URL}/groups/${this.groupId}`, {
+            headers: HEADERS
+          })
+          .then(response => {
+            console.log(response)
+            this.groupName = response.groupName
+            this.categories = response.categoryList
+            this.isAdmin = response.isAdmin
+            this.isMember = response.isMember
+          })
+          .catch(error => console.log(error))
     },
     goToAdmin() {
       console.log('GroupPage isAdmin: ' + this.isAdmin);
@@ -73,10 +83,9 @@ export default {
     }
   },
   created() {
-    this.initGroup()
   },
   mounted() {
-    this.initGroup()
+    this.getGroupData()
   }
 
 }
