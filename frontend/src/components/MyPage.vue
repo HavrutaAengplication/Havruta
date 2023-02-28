@@ -53,6 +53,9 @@ export default {
       console.log(this.popupview);
     },
 
+    /*
+      api 넣어서 하면 proxy로 변환 되는지 check
+     */
     async changeNickname() {
       const response = await axios.put("http://localhost:8080/api/mypage");
       console.log(response);

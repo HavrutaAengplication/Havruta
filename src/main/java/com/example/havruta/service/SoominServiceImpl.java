@@ -5,6 +5,7 @@ import com.example.havruta.data.entity.*;
 import com.example.havruta.data.entity.serializable.CategoryProblemId;
 import com.example.havruta.data.entity.serializable.MemberId;
 import com.example.havruta.data.repository.*;
+import com.example.havruta.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class SoominServiceImpl implements SoominService{
     private final CategoryProblemRepository categoryProblemRepository;
     private final MemberRepository memberRepository;
     private final UserRepository userRepository;
+    private JwtUtil jwtUtil;
 
     @Autowired
     public SoominServiceImpl(
@@ -28,7 +30,8 @@ public class SoominServiceImpl implements SoominService{
             ProblemRepository problemRepository,
             CategoryProblemRepository categoryProblemRepository,
             MemberRepository memberRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            JwtUtil jwtUtil
     ) {
         this.groupRepository = groupRepository;
         this.categoryRepository = categoryRepository;
@@ -37,6 +40,7 @@ public class SoominServiceImpl implements SoominService{
         this.categoryProblemRepository = categoryProblemRepository;
         this.memberRepository = memberRepository;
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public ResponseDto newCategory(String token, Integer groupId, CategoryInfoDto categoryInfoDto) {
@@ -53,8 +57,8 @@ public class SoominServiceImpl implements SoominService{
         /* 1. check if group id is valid */
         checkGroupIdValid(groupId);
         /* 2. check if token is group admin */
-        /* TODO: token */
-        //checkUserGroupAdmin(userId, groupId);
+        Integer userId = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userId, groupId);
         /* 3. check if parent category id is descendant of group root category */
         checkCategoryInGroup(categoryInfoDto.getParentCategoryId(), groupId);
         /* 4. check if categoryName already exists as a child of parentCategoryId (if exists, flag is true) */
@@ -105,8 +109,8 @@ public class SoominServiceImpl implements SoominService{
         /* 1. check if group id is valid */
         checkGroupIdValid(groupId);
         /* 2. check if token is group admin */
-        /* TODO: token */
-        //checkUserGroupAdmin(userId, groupId);
+        Integer userId = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userId, groupId);
         /* 3. check if category id is descendant of group root category */
         checkCategoryInGroup(categoryId, groupId);
         /* 4. check if category id is root category */
@@ -189,8 +193,8 @@ public class SoominServiceImpl implements SoominService{
         /* 1. check if group id is valid */
         checkGroupIdValid(groupId);
         /* 2. check if token is group admin */
-        /* TODO: token */
-        //checkUserGroupAdmin(userId, groupId);
+        Integer userId = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userId, groupId);
         /* 3. check if both category id & parent id are descendants of group root category */
         checkCategoryInGroup(categoryId, groupId);
         checkCategoryInGroup(categoryInfoDto.getParentCategoryId(), groupId);
@@ -226,8 +230,8 @@ public class SoominServiceImpl implements SoominService{
         /* 1. check if group id is valid */
         checkGroupIdValid(groupId);
         /* 2. check if token is group member */
-        /* TODO: token */
-        //checkUserGroupMember(userId, groupId);
+        Integer userId = jwtUtil.extractUserId(token);
+        checkUserGroupMember(userId, groupId, true);
         /* 3. check if category id is descendant of root id */
         checkCategoryInGroup(categoryId, groupId);
         /* 4. repository tasks */
@@ -297,15 +301,10 @@ public class SoominServiceImpl implements SoominService{
          */
         ResponseDto responseDto = new ResponseDto();
 
-
-        //test code need to be deleted
-        UserEntity userEntity = userRepository.findById(1).get();
-        Integer userId = userEntity.getUserId();
-
         /* 1. check if group id is valid */
         checkGroupIdValid(groupId);
         /* 2. check if token isn't group member */
-        /* TODO: token */
+        Integer userId = jwtUtil.extractUserId(token);
         checkUserGroupMember(userId, groupId, false);
         /* 3. repository tasks */
 
@@ -336,8 +335,8 @@ public class SoominServiceImpl implements SoominService{
         /* 1. check if group id is valid */
         checkGroupIdValid(groupId);
         /* 2. check if token is group member */
-        /* TODO: token */
-        //checkUserGroupMember(userId, groupId, true);
+        Integer userId = jwtUtil.extractUserId(token);
+        checkUserGroupMember(userId, groupId, true);
         /* 3. check if categories are descendant of groupId */
         List<CategoryClosureEntity> categoryClosureEntityList = categoryClosureRepository.findById_ParentId(groupRepository.findById(groupId).get().getRootCategoryId().getCategoryId());
 
@@ -347,8 +346,9 @@ public class SoominServiceImpl implements SoominService{
         /* 4. repository tasks */
         /* 4-1. problem repo */
         ProblemEntity problemEntity = new ProblemEntity();
-        /* TODO: userId */
-        UserEntity userEntity = userRepository.findById(1).get(); //test code need to be deleted
+
+        UserEntity userEntity = userRepository.findById(userId).get();
+
         problemEntity.setUserId(userEntity);
         problemEntity.setProblemType(problemRequestDto.getProblemType());
         problemEntity.setProblemQuestion(problemRequestDto.getProblemQuestion());
