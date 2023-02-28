@@ -3,10 +3,10 @@
     <div class="popup">
       <h2>Modify Group Info</h2>
       <label for="group-name-input">Group Name:</label>
-      <input id="group-name-input" v-model="groupName" type="text">
+      <input id="group-name-input" v-model="newGroupName" type="text">
       <div>
         <button @click="closePopup">Cancel</button>
-        <button @click="sendGroupName">Send</button>
+        <button @click="sendGroupName">Modify</button>
       </div>
     </div>
   </div>
@@ -16,7 +16,7 @@
 export default {
   data() {
     return {
-      groupName: '',
+      newGroupName: '',
     };
   },
   methods: {
@@ -24,10 +24,11 @@ export default {
       this.$emit('close-popup');
     },
     sendGroupName() {
-      this.$emit('send-group-name', this.groupName);
+      this.$emit('send-group-name', this.newGroupName);
     },
   },
   mounted() {
+    console.log("Hello Modify Group!");
     const popup = this.$el.querySelector('.popup');
     popup.style.marginTop = `-${popup.offsetHeight / 2}px`;
     popup.style.marginLeft = `-${popup.offsetWidth / 2}px`;
