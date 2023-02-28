@@ -1,68 +1,94 @@
 <template>
-  <div class="categories">
-    <button @click="createCate">CREATE CATEGORY</button>
-    <ul>
-      <CategoryView class="item" :model="categoryData"></CategoryView>
-    </ul>
+  <div class="parallel">
+    <div class="box">
+      <br>
+    </div>
+    <div class="box">
+      <button v-if="isAdmin" @click="goToAdmin">Admin Settings</button>
+    </div>
   </div>
-  <div v-if="isAdmin">
-    <button @click="OpenAdminPage()"> GROUP ADMIN PAGE </button>
+
+  <div class="parallel">
+    <div class="box">
+      <p>groupName: {{group.name}}</p>
+      <p>groupId: {{group.id}}</p>
+    </div>
+    <div class="box">
+      <h2>Categories</h2>
+      <ul>
+        <li v-for="category in categories" :key="category.id">
+          <router-link :to="'/groups/' + this.group.id + '/categories/' + category.id">{{category.name}}</router-link>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import CategoryView from "@/components/CategoryView.vue";
-import { ref } from 'vue'
-
-const categoryData = ref({
-  name: 'Categories',
-  children: [
-    { name: 'hello' },
-    { name: 'world' },
-    {
-      name: 'child folder',
-      children: [
-        {
-          name: 'child folder',
-          children: [{ name: 'hello' }, { name: 'world' }]
-        },
-        { name: 'hello' },
-        { name: 'world' },
-        {
-          name: 'child folder',
-          children: [{ name: 'hello' }, { name: 'world' }]
-        }
-      ]
-    }
-  ]
-})
+import groupData from '@/groupData.json'
 
 export default {
   name: "GroupPage",
-  components:{
-    CategoryView
-  },
-  data(){
+  data() {
     return {
-      categoryData,
-      isAdmin: true
+      categories: [
+        {
+          id: 1,
+          name: "C1",
+          depth: 1,
+        },
+        {
+          id: 2,
+          name: "C2",
+          depth: 2,
+        },
+        {
+          id: 3,
+          name: "C3",
+          depth: 3,
+        }
+      ],
+      group: {
+        id: "",
+        name: "",
+      },
+      isAdmin: false,
+      isMember: false,
     }
   },
-  methods:{
-    OpenAdminPage(){
-
+  computed: {
+  },
+  methods: {
+    initGroup() {
+      let groupId = parseInt(this.$route.params.groupId);
+      this.group = groupData.groups.find(group => group.id === groupId);
+      this.isAdmin = true;
+    },
+    goToAdmin() {
+      console.log('GroupPage isAdmin: ' + this.isAdmin);
+      this.$router.push({
+        name: 'admin',
+        query: { isAdmin: this.isAdmin },
+      });
     }
+  },
+  created() {
+    this.initGroup()
+  },
+  mounted() {
+    this.initGroup()
   }
 
 }
 </script>
 
-<style>
-.item {
-  cursor: pointer;
-  line-height: 1.5;
+<style scoped>
+.parallel {
+  display: flex;
+  flex-wrap: wrap;
 }
-.bold {
-  font-weight: bold;
+
+.box {
+  width: 50%;
 }
 </style>

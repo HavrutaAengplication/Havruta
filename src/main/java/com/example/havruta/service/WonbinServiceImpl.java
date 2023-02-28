@@ -112,8 +112,8 @@ public class WonbinServiceImpl implements WonbinService{
                 throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
             }
             CategoryIdDto categoryIdDto = new CategoryIdDto();
-            categoryIdDto.setCatergoryId(categoryEntity.getCategoryId());
-            categoryIdDto.setCatergoryName(categoryEntity.getCategoryName());
+            categoryIdDto.setCategoryId(categoryEntity.getCategoryId());
+            categoryIdDto.setCategoryName(categoryEntity.getCategoryName());
             categoryIdDtoList.add(categoryIdDto);
         }
 

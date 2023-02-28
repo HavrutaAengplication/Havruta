@@ -252,9 +252,11 @@ public class SoominServiceImpl implements SoominService{
             duplicateProblemEntityList.add(c.getProblemEntity());
         }
 
+        /* remove duplicates */
         Set<ProblemEntity> problemEntitySet = new HashSet<>(duplicateProblemEntityList);
         List<ProblemEntity> problemEntityList = new ArrayList<>(problemEntitySet);
 
+        /* for response */
         List<CategoryProblemDto> categoryProblemDtoList = new ArrayList<>();
 
         for (ProblemEntity e : problemEntityList) {

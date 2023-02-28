@@ -13,8 +13,13 @@ import java.util.Optional;
 public interface CategoryProblemRepository extends JpaRepository<CategoryProblemEntity, CategoryProblemId> {
 
     public List<CategoryProblemEntity> findById_CategoryId(Integer categoryId);
+    public List<CategoryProblemEntity> findAllByCategoryEntity_CategoryId(CategoryEntity categoryEntity);
     public List<CategoryProblemEntity> findAllById_ProblemId(Integer problemId);
 
     @Transactional
-    void deleteAllById_CategoryId(Integer id_categoryId);
+    public void deleteAllById_CategoryId(Integer categroyId);
+
+    public Optional<CategoryProblemEntity> findFirstByProblemEntity(ProblemEntity problemEntity);
+
+    public List<CategoryProblemEntity> findAllByProblemEntity(ProblemEntity problemEntity);
 }

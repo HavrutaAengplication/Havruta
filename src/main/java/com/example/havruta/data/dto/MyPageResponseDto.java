@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class MyPageResponseDto {
     private String userName;
-    private List<GroupDto> groups;
+    private List<GroupDto> groupList;
 }
