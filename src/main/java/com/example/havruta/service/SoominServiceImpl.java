@@ -115,8 +115,8 @@ public class SoominServiceImpl implements SoominService{
         categoryClosureRepository.removeCategory_dropTempClosureTable();
         categoryClosureRepository.removeCategory_createTempClosureTable(categoryId); /* maybe need some lock or semaphore (if this was a multithreaded program) */
         categoryClosureRepository.removeCategory_deleteFromCategoryClosure();
-        categoryClosureRepository.removeCategory_deleteFromCategories();
         categoryClosureRepository.removeCategory_deleteFromCategoryProblems();
+        categoryClosureRepository.removeCategory_deleteFromCategories();
         categoryClosureRepository.removeCategory_dropTempClosureTable();
 
         responseDto.setMessage("SUCCESS");
@@ -182,16 +182,21 @@ public class SoominServiceImpl implements SoominService{
         List<CategoryClosureEntity> categoryClosureEntityList = categoryClosureRepository.findById_ParentId(categoryId);
 
         List<Integer> categoryIdList = new ArrayList<>();
-        for(CategoryClosureEntity c:categoryClosureEntityList){
+
+        for(CategoryClosureEntity c : categoryClosureEntityList){
             categoryIdList.add(c.getId().getChildId());
         }
+
+        System.out.println("categoryIdList = " + categoryIdList);
 
         /* find all problems of the categories */
         List<CategoryProblemEntity> categoryProblemEntityList = new ArrayList<>();
 
         for(Integer i : categoryIdList){
-            categoryProblemEntityList.addAll(categoryProblemRepository.findAllById_CategoryId(i));
+            categoryProblemEntityList.addAll(categoryProblemRepository.findById_CategoryId(i));
         }
+
+        System.out.println("categoryProblemEntityList = " + categoryProblemEntityList);
 
         List<ProblemEntity> problemEntityList = new ArrayList<>();
         for (CategoryProblemEntity c : categoryProblemEntityList) {
@@ -200,19 +205,30 @@ public class SoominServiceImpl implements SoominService{
 
         List<CategoryProblemDto> categoryProblemDtoList = new ArrayList<>();
 
-        /*for (ProblemEntity e : problemEntityList) {*/
-            /* TODO : parse candidate & image (type json -> List) *//*
-            CategoryProblemDto categoryProblemDto = new CategoryProblemDto(
-                    e.getProblemId(),
-                    e.getProblemType(),
-                    e.getProblemQuestion(),
-                    e.getProblemCandidate(),
-                    e.getProblemAnswer(),
-                    e.getProblemImage()
-            );
+        for (ProblemEntity e : problemEntityList) {
+            CategoryProblemDto categoryProblemDto = new CategoryProblemDto();
+
+            categoryProblemDto.setProblemId(e.getProblemId());
+            categoryProblemDto.setProblemType(e.getProblemType());
+            categoryProblemDto.setProblemAnswer(e.getProblemAnswer());
+            categoryProblemDto.setProblemQuestion(e.getProblemQuestion());
+
+            List<ItemDto> itemDtoList = new ArrayList<>();
+            List<ImageDto> imageDtoList = new ArrayList<>();
+
+            for(Map.Entry<Integer, String> mapEntry : e.getProblemCandidate().entrySet()){
+                itemDtoList.add(new ItemDto(mapEntry.getValue()));
+            }
+
+            for(Map.Entry<Integer, String> mapEntry : e.getProblemImage().entrySet()){
+                imageDtoList.add(new ImageDto(mapEntry.getValue()));
+            }
+
+            categoryProblemDto.setProblemCandidate(itemDtoList);
+            categoryProblemDto.setProblemImage(imageDtoList);
 
             categoryProblemDtoList.add(categoryProblemDto);
-        }*/
+        }
 
         responseDto.setCategoryProblemList(categoryProblemDtoList);
 
@@ -294,7 +310,7 @@ public class SoominServiceImpl implements SoominService{
         Map<Integer, String> imageMap = new HashMap<>();
         cnt = 0;
         for(ImageDto imageDto : problemRequestDto.getProblemImage()){
-            candidateMap.put(cnt++, imageDto.getImage());
+            imageMap.put(cnt++, imageDto.getImage());
         }
         problemEntity.setProblemImage(imageMap);
 

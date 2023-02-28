@@ -46,13 +46,13 @@ public interface CategoryClosureRepository extends JpaRepository<CategoryClosure
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM categories WHERE category_id IN (SELECT child_category_id FROM temp_closure_table)", nativeQuery = true)
-    void removeCategory_deleteFromCategories();
+    @Query(value = "DELETE FROM category_problems WHERE category_entity_category_id IN (SELECT child_category_id FROM temp_closure_table)", nativeQuery = true)
+    void removeCategory_deleteFromCategoryProblems();
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM category_problems WHERE category_entity_category_id IN (SELECT child_category_id FROM temp_closure_table)", nativeQuery = true)
-    void removeCategory_deleteFromCategoryProblems();
+    @Query(value = "DELETE FROM categories WHERE category_id IN (SELECT child_category_id FROM temp_closure_table)", nativeQuery = true)
+    void removeCategory_deleteFromCategories();
 
     @Modifying
     @Transactional
