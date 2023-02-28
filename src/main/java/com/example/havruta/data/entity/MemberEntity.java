@@ -1,5 +1,6 @@
 package com.example.havruta.data.entity;
 
+import com.example.havruta.data.entity.serializable.MemberId;
 import lombok.*;
 
 import javax.persistence.*;

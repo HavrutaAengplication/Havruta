@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryProblemRepository extends JpaRepository<CategoryProblemEntity, CategoryProblemId> {
+    public List<CategoryProblemEntity> findAllByCategoryEntity_CategoryId(Integer categoryId);
+
+    public List<CategoryProblemEntity> findById_CategoryId(Integer categoryId);
     public List<CategoryProblemEntity> findAllByCategoryEntity_CategoryId(CategoryEntity categoryEntity);
 
     public Optional<CategoryProblemEntity> findFirstByProblemEntity(ProblemEntity problemEntity);

@@ -1,54 +1,38 @@
 <template>
-  <div class="bg-gray" :class="{ active : popupview }">
-    <div class="inside-popup">
-      <pop-up @close-popup="popupGroup()"></pop-up>
-      <h1> Create A Group </h1><br>
-      <span>group name </span><input v-model="groupName"><br>
-      <span><br>subject name </span><input v-model="subjectName">
-      <button @click="CreateGroup()">Create</button>
-    </div>
-  </div>
-
   <div class="landing-page">
     <div class="upper-side">
       <div class="upper-left">
         <button @click="getGroup">Get Data</button>
         <h3>Groups</h3>
-        <ul>
-          <li v-for="group in groupList" :key="group.groupId">{{ group.groupName }}</li>
-        </ul>
-      </div>
-      <div class="upper-right">
-        <router-link to="/mypage">My Page</router-link>
-      </div>
-    </div>
-    <div class="lower-side">
-      <div class="lower-left">
-        <h3>Search Groups</h3>
-        <input type="text" v-model="searchTerm" placeholder="Search for groups..." />
+        <button @click="showPopup">Add Group</button>
+        <popup v-if="popupVisible" @close-popup="hidePopup" @send-group-name="addGroup"></popup>
+
+        <br><br>
         <ul>
           <li v-for="group in filteredGroups" :key="group.id">{{ group.name }}</li>
         </ul>
+        <input type="text" v-model="searchTerm" placeholder="Search for groups..." />
+
       </div>
-      <div class="lower-right">
-        <button @click="popupGroup">Create Group</button>
+      <div class="upper-right">
+        <router-link to="/mypage">My Page</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import PopUp from '@/components/CreateGroup.vue'
+import Popup from '@/components/CreateGroup.vue'
 import axios from 'axios'
-//import http from "../http"
+import groupData from '@/groupData.json'
 
 export default {
   components:{
-    PopUp,
+    Popup,
   },
   data() {
     return {
-      popupview: false,
+      popupVisible: false,
       groups: [
         { id: 1, name: '운영체제' },
         { id: 2, name: '알고리즘' },
@@ -56,6 +40,8 @@ export default {
       ],
       searchTerm: '',
       groupList: "",
+      groupName: "",
+      subjectName: "",
     };
   },
   computed: {
@@ -63,6 +49,9 @@ export default {
       return this.groups.filter(group => {
         return group.name.toLowerCase().includes(this.searchTerm.toLowerCase());
       });
+    },
+    testGroups() {
+      return groupData.groups
     }
   },
   methods: {
@@ -115,26 +104,35 @@ export default {
             const { data } = response
             console.log(data)
             console.log(data.groupList)
-            this.groupList = data.groupList
+            this.groups = data.groupList
           })
           .catch(error => {
             alert(error)
           })
     },
 
-    popupGroup() {
-      this.popupview = (this.popupview) ? false : true
-      // code to create a new group
-      /*
-      axios.
-        post("http://localhost:8080/api/home/new",
-             ...);
-       */
+    showPopup() {
+      this.popupVisible = true;
+      this.freezeBody();
     },
-    createGroup() {
-      this.popupGroup();
-    }
+    hidePopup() {
+      this.popupVisible = false;
+      this.unfreezeBody();
+    },
+    addGroup(name) {
+      const id = this.groups.length + 1;
+      this.groups.push({ id, name });
+      this.hidePopup();
+      console.log(name);
+    },
+    freezeBody() {
+      document.body.style.overflow = 'hidden';
+    },
+    unfreezeBody() {
+      document.body.style.overflow = 'auto';
+    },
   },
+
   created(){
     // this.getGroup()
   },

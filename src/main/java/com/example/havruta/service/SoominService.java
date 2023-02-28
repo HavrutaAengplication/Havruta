@@ -15,5 +15,5 @@ public interface SoominService {
     public CategoryProblemListDto getCategoryProblem(String token, Integer groupId, Integer categoryId);
     public ResponseDto registerGroup(String token, Integer groupId);
     public CategoryListDto getGroupCategory(Integer groupId);
-    public ResponseDto makeNewProblem(String token, ProblemDto reqbody, Integer groupId);
+    public ResponseDto makeNewProblem(String token, ProblemRequestDto reqbody, Integer groupId);
 }

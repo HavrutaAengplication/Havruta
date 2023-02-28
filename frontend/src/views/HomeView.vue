@@ -11,6 +11,11 @@ import HelloWorld from '@/components/MainPage.vue'
 
 export default {
   name: 'HomeView',
+  data () {
+    return {
+      subjectName: "",
+    }
+  },
   components: {
     HelloWorld
   }

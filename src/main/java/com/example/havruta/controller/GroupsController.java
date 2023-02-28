@@ -85,7 +85,7 @@ public class GroupsController {
         //넘겨줄 때 사용자 정보도 넘어가야 됨
         ResponseDto dto = wonbinService.dropMember(userId, groupId);
         return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
+                .status(HttpStatus.OK)
                 //.location(URI.create("/"))
                 .body(dto);
     }
@@ -218,7 +218,7 @@ public class GroupsController {
     @PostMapping("/problems")
     public ResponseEntity<ResponseDto> newProblemController(
             @RequestHeader("Authorization") String token,
-            @RequestBody ProblemDto reqbody,
+            @RequestBody ProblemRequestDto reqbody,
             @PathVariable Integer groupId
     ){
         ResponseDto responseDto = soominService.makeNewProblem(token, reqbody, groupId);
