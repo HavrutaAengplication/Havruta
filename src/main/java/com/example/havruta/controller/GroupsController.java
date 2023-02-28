@@ -2,7 +2,6 @@ package com.example.havruta.controller;
 
 import com.example.havruta.data.dto.*;
 import com.example.havruta.service.HavrutaService;
-import com.example.havruta.service.SoominService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import java.net.URI;
 @RequestMapping("/groups/{groupId}")
 public class GroupsController {
     private final HavrutaService havrutaService;
-    private final SoominService soominService;
 
     @Autowired
-    public GroupsController(HavrutaService havrutaService, SoominService soominService) {
+    public GroupsController(HavrutaService havrutaService) {
         this.havrutaService = havrutaService;
-        this.soominService = soominService;
     }
 
     @GetMapping("")
@@ -137,7 +134,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @RequestBody CategoryInfoDto requestDto
     ){
-        ResponseDto responseDto = soominService.newCategory(token, groupId, requestDto);
+        ResponseDto responseDto = havrutaService.newCategory(token, groupId, requestDto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -151,7 +148,7 @@ public class GroupsController {
             @PathVariable Integer categoryId,
             @RequestHeader("Authorization") String token
     ){
-        ResponseDto responseDto = soominService.deleteCategory(token, groupId, categoryId);
+        ResponseDto responseDto = havrutaService.deleteCategory(token, groupId, categoryId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -166,7 +163,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @RequestBody CategoryInfoDto requestDto
     ){
-        ResponseDto responseDto = soominService.updateCategory(token, groupId, requestDto, categoryId);
+        ResponseDto responseDto = havrutaService.updateCategory(token, groupId, requestDto, categoryId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -180,7 +177,7 @@ public class GroupsController {
             @PathVariable Integer groupId,
             @PathVariable Integer categoryId
     ){
-        CategoryProblemListDto responseDto = soominService.getCategoryProblem(token, groupId, categoryId);
+        CategoryProblemListDto responseDto = havrutaService.getCategoryProblem(token, groupId, categoryId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -193,7 +190,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @PathVariable Integer groupId
     ){
-        ResponseDto responseDto = soominService.registerGroup(token,groupId);
+        ResponseDto responseDto = havrutaService.registerGroup(token,groupId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -206,7 +203,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @PathVariable Integer groupId
     ){
-        CategoryListDto responseDto = soominService.getGroupCategory(groupId);
+        CategoryListDto responseDto = havrutaService.getGroupCategory(groupId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -220,7 +217,7 @@ public class GroupsController {
             @RequestBody ProblemRequestDto reqbody,
             @PathVariable Integer groupId
     ){
-        ResponseDto responseDto = soominService.makeNewProblem(token, reqbody, groupId);
+        ResponseDto responseDto = havrutaService.makeNewProblem(token, reqbody, groupId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
