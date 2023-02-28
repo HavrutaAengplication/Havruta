@@ -9,7 +9,5 @@ module.exports = {
         changeOrigin: true // cross origin 허용
       }
     }
-  }
+  },
 };
-
-export const BASE_URL = 'http://localhost:8080';

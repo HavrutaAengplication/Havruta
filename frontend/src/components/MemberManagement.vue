@@ -49,7 +49,7 @@
 
 <script>
 import axios from 'axios'
-import {BASE_URL} from "../../vue.config";
+import {BASE_URL} from "@/config";
 export default {
   data() {
     return {
