@@ -56,12 +56,13 @@ export default {
       selectedCategories : [],
       selectedCategory: 1,
       questionName: "",
-      selectedQuestionType: "multiple-choice",
+      selectedQuestionType: "multiple-choices",
       questionContent: "",
       choices: [],
       checkedChoices: [],
       currentChoice: "",
       shortAnswer: "",
+      answer: "",
       images: [],
       openNewChoice: false,
       newChoiceContent: "",
@@ -95,7 +96,7 @@ export default {
       console.log(question);
 
       axios.
-      post('http://localhost:8080/groups/' + this.groupId, {
+      post('http://localhost:8080/groups/' + this.groupId + '/problems', {
         headers : this.headers,
         body : {
           categoryList : this.categories,
