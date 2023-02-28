@@ -13,4 +13,9 @@ public interface CategoryProblemRepository extends JpaRepository<CategoryProblem
     public List<CategoryProblemEntity> findAllByCategoryEntity_CategoryId(Integer categoryId);
 
     public List<CategoryProblemEntity> findById_CategoryId(Integer categoryId);
+    public List<CategoryProblemEntity> findAllByCategoryEntity_CategoryId(CategoryEntity categoryEntity);
+
+    public Optional<CategoryProblemEntity> findFirstByProblemEntity(ProblemEntity problemEntity);
+
+    public List<CategoryProblemEntity> findAllByProblemEntity(ProblemEntity problemEntity);
 }

@@ -49,33 +49,7 @@ public class WonbinDaoImpl implements WonbinDao {
     }
     @Override
     public List<CategoryClosureEntity> findClosuresByRootId(Integer rootId){
-        List<CategoryClosureEntity> allCategoryClosureEntityList = new ArrayList<CategoryClosureEntity>();
-        Stack<Integer> stack = new Stack<>();
-        stack.add(rootId);
-        /*Queue<Integer> queue = new LinkedList<>();
-        queue.add(rootId);
-
-        while(!queue.isEmpty()){
-            Integer parentId = queue.poll();
-            List<CategoryClosureEntity> categoryClosureEntityList = categoryClosureRepository.findById_ParentId(parentId);
-            allCategoryClosureEntityList.addAll(categoryClosureEntityList);
-            for(CategoryClosureEntity categoryClosureEntity : categoryClosureEntityList){
-                queue.add(categoryClosureEntity.getChild().getCategoryId());
-            }
-        }*/
-        while(!stack.empty()){
-            Integer parentId = stack.pop();
-            List<CategoryClosureEntity> categoryClosureEntityList = categoryClosureRepository.findById_ParentId(parentId);
-            Optional<CategoryClosureEntity> optionalCategoryClosureEntity = categoryClosureRepository.findById_ChildId(parentId);
-            if(optionalCategoryClosureEntity.isPresent()){
-                allCategoryClosureEntityList.add(categoryClosureRepository.findById_ChildId(parentId).get());
-            }
-            for(int i = categoryClosureEntityList.size() - 1; i >= 0; i--){
-                stack.push(categoryClosureEntityList.get(i).getChild().getCategoryId());
-            }
-        }
-
-        return allCategoryClosureEntityList;
+        return null;
     }
     @Override
     public Optional<CategoryEntity> findCategoryById(Integer categoryId){
