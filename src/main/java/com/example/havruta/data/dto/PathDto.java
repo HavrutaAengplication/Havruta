@@ -9,7 +9,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyPageResponseDto {
-    private String userName;
-    private List<GroupDto> groupList;
+public class PathDto {
+    List<CategoryIdDto> categoryIdDtoList;
 }
