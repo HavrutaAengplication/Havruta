@@ -51,20 +51,17 @@ export default {
   name: 'CategoryComponent',
   data() {
     return {
-      categories: [
-        { id: 1, name: "Science" },
-        { id: 2, name: "Mathematics" },
-        { id: 3, name: "History" },
-      ],
+      categories: [],
       selectedCategories : [],
       selectedCategory: 1,
       questionName: "",
-      selectedQuestionType: "multiple-choice",
+      selectedQuestionType: "multiple-choices",
       questionContent: "",
       choices: [],
       checkedChoices: [],
       currentChoice: "",
       shortAnswer: "",
+      answer: "",
       images: [],
       openNewChoice: false,
       newChoiceContent: "",
@@ -98,7 +95,7 @@ export default {
       console.log(question);
 
       axios.
-      post('http://localhost:8080/groups/' + this.groupId, {
+      post('http://localhost:8080/groups/' + this.groupId + '/problems', {
         headers : this.headers,
         body : {
           categoryList : this.categories,
