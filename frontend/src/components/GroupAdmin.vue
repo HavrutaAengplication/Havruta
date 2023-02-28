@@ -20,6 +20,7 @@
 
 <script>
 import axios from 'axios'
+import {BASE_URL} from "@/config";
 import ModifyGroupInfo from '@/components/ModifyGroupInfo.vue'
 
 export default {
@@ -65,7 +66,7 @@ export default {
     modifyGroupInfo(name) {
       console.log("New Group Name: " + name);
       axios.
-        put("http://localhost:8080/groups/" + this.groupId,
+        put(`${BASE_URL}/groups/${this.groupId}`,
           {
             headers: this.headers,
             body: {
@@ -83,7 +84,7 @@ export default {
     },
     removeGroup() {
       axios.
-        delete("http://localhost:8080/groups/" + this.groupId,
+        delete(`${BASE_URL}/groups/${this.groupId}`,
           {
             headers: this.headers
           })
@@ -102,8 +103,7 @@ export default {
        */
 
       axios.
-        delete("http://localhost:8080/groups/" +
-          this.groupId + "/categories/" + this.categoryId,
+        delete(`${BASE_URL}/groups/${this.groupId}/categories/${this.categoryId}`,
           {
             headers: this.headers
           })

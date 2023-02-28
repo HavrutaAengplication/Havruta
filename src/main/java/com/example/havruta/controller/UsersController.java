@@ -15,7 +15,7 @@ import java.net.URI;
 @RequestMapping("/users")
 public class UsersController {
     private final HavrutaService havrutaService;
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     public UsersController(HavrutaService havrutaService, JwtUtil jwtUtil) {
         this.havrutaService = havrutaService;

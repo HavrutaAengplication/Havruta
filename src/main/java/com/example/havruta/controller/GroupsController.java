@@ -1,9 +1,7 @@
 package com.example.havruta.controller;
 
 import com.example.havruta.data.dto.*;
-import com.example.havruta.service.SoominService;
-import com.example.havruta.service.WonbinService;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
+import com.example.havruta.service.HavrutaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +12,11 @@ import java.net.URI;
 @RestController
 @RequestMapping("/groups/{groupId}")
 public class GroupsController {
-    private final WonbinService wonbinService;
-    private final SoominService soominService;
+    private final HavrutaService havrutaService;
 
     @Autowired
-    public GroupsController(WonbinService wonbinService, SoominService soominService) {
-        this.wonbinService = wonbinService;
-        this.soominService = soominService;
+    public GroupsController(HavrutaService havrutaService) {
+        this.havrutaService = havrutaService;
     }
 
     @GetMapping("")
@@ -29,7 +25,7 @@ public class GroupsController {
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        SpecificGroupResponseDto dto = wonbinService.specificGroupPage(groupId);
+        SpecificGroupResponseDto dto = havrutaService.specificGroupPage(token, groupId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
@@ -42,7 +38,7 @@ public class GroupsController {
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        AdminResponseDto dto = wonbinService.admin(groupId);
+        AdminResponseDto dto = havrutaService.admin(token, groupId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
@@ -55,7 +51,7 @@ public class GroupsController {
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        AdminMembersResponseDto dto = wonbinService.adminMembers(groupId);
+        AdminMembersResponseDto dto = havrutaService.adminMembers(token, groupId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
@@ -69,7 +65,7 @@ public class GroupsController {
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        ResponseDto dto = wonbinService.designateAdmin(reqBody.getNewAdminId(), groupId);
+        ResponseDto dto = havrutaService.designateAdmin(token, reqBody.getNewAdminId(), groupId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
@@ -83,7 +79,7 @@ public class GroupsController {
             @PathVariable("userId") Integer userId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        ResponseDto dto = wonbinService.dropMember(userId, groupId);
+        ResponseDto dto = havrutaService.dropMember(token, userId, groupId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 //.location(URI.create("/"))
@@ -97,7 +93,7 @@ public class GroupsController {
             @PathVariable("userId") Integer userId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        ResponseDto dto = wonbinService.confirm(userId, groupId);
+        ResponseDto dto = havrutaService.confirm(token, userId, groupId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
@@ -110,7 +106,7 @@ public class GroupsController {
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        ResponseDto dto = wonbinService.deleteGroup(groupId);
+        ResponseDto dto = havrutaService.deleteGroup(token, groupId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
@@ -124,7 +120,7 @@ public class GroupsController {
             @PathVariable("groupId") Integer groupId
     ){
         //넘겨줄 때 사용자 정보도 넘어가야 됨
-        ResponseDto dto = wonbinService.updateGroup(reqBody.getNewGroupName(), groupId);
+        ResponseDto dto = havrutaService.updateGroup(token, reqBody.getNewGroupName(), groupId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 //.location(URI.create("/"))
@@ -138,7 +134,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @RequestBody CategoryInfoDto requestDto
     ){
-        ResponseDto responseDto = soominService.newCategory(token, groupId, requestDto);
+        ResponseDto responseDto = havrutaService.newCategory(token, groupId, requestDto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -152,7 +148,7 @@ public class GroupsController {
             @PathVariable Integer categoryId,
             @RequestHeader("Authorization") String token
     ){
-        ResponseDto responseDto = soominService.deleteCategory(token, groupId, categoryId);
+        ResponseDto responseDto = havrutaService.deleteCategory(token, groupId, categoryId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -167,7 +163,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @RequestBody CategoryInfoDto requestDto
     ){
-        ResponseDto responseDto = soominService.updateCategory(token, groupId, requestDto, categoryId);
+        ResponseDto responseDto = havrutaService.updateCategory(token, groupId, requestDto, categoryId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -181,7 +177,7 @@ public class GroupsController {
             @PathVariable Integer groupId,
             @PathVariable Integer categoryId
     ){
-        CategoryProblemListDto responseDto = soominService.getCategoryProblem(token, groupId, categoryId);
+        CategoryProblemListDto responseDto = havrutaService.getCategoryProblem(token, groupId, categoryId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -194,7 +190,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @PathVariable Integer groupId
     ){
-        ResponseDto responseDto = soominService.registerGroup(token,groupId);
+        ResponseDto responseDto = havrutaService.registerGroup(token,groupId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -207,7 +203,7 @@ public class GroupsController {
             @RequestHeader("Authorization") String token,
             @PathVariable Integer groupId
     ){
-        CategoryListDto responseDto = soominService.getGroupCategory(groupId);
+        CategoryListDto responseDto = havrutaService.getGroupCategory(groupId);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -221,7 +217,7 @@ public class GroupsController {
             @RequestBody ProblemRequestDto reqbody,
             @PathVariable Integer groupId
     ){
-        ResponseDto responseDto = soominService.makeNewProblem(token, reqbody, groupId);
+        ResponseDto responseDto = havrutaService.makeNewProblem(token, reqbody, groupId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

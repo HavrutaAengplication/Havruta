@@ -9,5 +9,5 @@ module.exports = {
         changeOrigin: true // cross origin 허용
       }
     }
-  }
+  },
 };
