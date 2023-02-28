@@ -1,4 +1,8 @@
 <template>
+
+  <div>
+    <h1>{{groupName}}</h1>
+  </div>
 <div>
   <button><router-link :to="'/groups/' + this.groupId + '/members'">회원 관리</router-link></button>
 </div>
@@ -31,9 +35,9 @@ export default {
   },
   data() {
     return {
-
+      groupName: "",
+      categoryList: "",
       popupModifyGroupVisible: false,
-
     }
   },
   computed: {
@@ -58,13 +62,25 @@ export default {
       console.log('Admin isAdmin: ' + this.isAdmin)
       alert('You are not authorized to access this page.');
       this.$router.go(-1);  // go back
+      return
     }
-    // console.log('route: ' + this.$route)
-    // console.log('router: ' + this.$router)
+    this.getGroupData()
   },
   methods: {
+    getGroupData() {
+      axios
+          .get(`${BASE_URL}/groups/${this.groupId}/admin`, {
+            headers: HEADERS
+          })
+          .then (response => {
+            console.log(response)
+            this.groupName = response.data.groupName
+            this.categoryList = response.data.categoryList
+          })
+    },
     modifyGroupInfo(name) {
       console.log("New Group Name: " + name);
+      this.groupName = name;
       axios.
         put(`${BASE_URL}/groups/${this.groupId}`,
           { newGroupName: name },
@@ -78,7 +94,8 @@ export default {
           .catch(error => {
             alert(error)
           })
-
+      this.getGroupData()
+      this.hidePopup()
     },
     removeGroup() {
       axios.

@@ -123,7 +123,7 @@ export default {
           })
           .then(response => {
             console.log(response)
-            this.problems = response.categoryProblemList
+            this.problems = response.data.categoryProblemList
           })
     },
     toggleItems(index) {

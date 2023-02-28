@@ -6,7 +6,7 @@
       <div>
         <label for="category">문제 카테고리 : </label>
         <select id="category" v-model="selectedCategory" multiple>
-          <option v-for="category in categories" :key="category.id" :value="category.id" @click="assignCategory()">{{ category.name }}</option>
+          <option v-for="category in categories" :key="category.categoryId" :value="category.categoryName" @click="assignCategory()">{{ category.categoryName }}</option>
         </select>
         <div> 선택된 카테고리 : {{ selectedCategories }}</div>
       </div>
@@ -46,16 +46,13 @@
 
 <script>
 import axios from 'axios'
+import {BASE_URL, HEADERS} from "@/config";
 
 export default {
   name: 'CategoryComponent',
   data() {
     return {
-      categories: [
-        { id: 1, name: "Science" },
-        { id: 2, name: "Mathematics" },
-        { id: 3, name: "History" },
-      ],
+      categories: [],
       selectedCategories : [],
       selectedCategory: 1,
       questionName: "",
@@ -123,17 +120,18 @@ export default {
     headers() {
       return {Authorization: this.token}
     },
+
+
     groupId() {
       return this.$route.params.groupId
     },
   },
   created() {
-    axios.get("http://localhost:8080/groups/" + this.groupId + "/problems",
+    axios.get(`${BASE_URL}/groups/${this.groupId}/problems`,
         {
-          headers: this.headers
+          headers: HEADERS
         }).then(response => {
-          const data = response
-      this.categories = data.categoryList
+      this.categories = response.data.categoryList
         }).catch(error => {
           alert(error)
     })

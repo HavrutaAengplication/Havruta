@@ -17,7 +17,7 @@
       <h2>Categories</h2>
       <ul>
         <li v-for="category in categories" :key="category.categoryId">
-          <router-link :to="'/groups/' + this.group.id + '/categories/' + category.categoryId">
+          <router-link :to="'/groups/' + this.groupId + '/categories/' + category.categoryId">
             {{category.categoryName}}</router-link>
         </li>
       </ul>
@@ -67,10 +67,10 @@ export default {
           })
           .then(response => {
             console.log(response)
-            this.groupName = response.groupName
-            this.categories = response.categoryList
-            this.isAdmin = response.isAdmin
-            this.isMember = response.isMember
+            this.groupName = response.data.groupName
+            this.categories = response.data.categoryList
+            this.isAdmin = response.data.isAdmin
+            this.isMember = response.data.isMember
           })
           .catch(error => console.log(error))
     },
