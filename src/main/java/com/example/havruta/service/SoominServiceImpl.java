@@ -112,13 +112,61 @@ public class SoominServiceImpl implements SoominService{
         /* 4. check if category id is root category */
         checkCategoryRoot(categoryId, groupId);
         /* 5. repository tasks */
-        /* TODO: move the problems to root category */
-        categoryClosureRepository.removeCategory_dropTempClosureTable();
-        categoryClosureRepository.removeCategory_createTempClosureTable(categoryId); /* maybe need some lock or semaphore (if this was a multithreaded program) */
-        categoryClosureRepository.removeCategory_deleteFromCategoryClosure();
-        categoryClosureRepository.removeCategory_deleteFromCategoryProblems();
-        categoryClosureRepository.removeCategory_deleteFromCategories();
-        categoryClosureRepository.removeCategory_dropTempClosureTable();
+        /* get category id list */
+        List<CategoryClosureEntity> categoryClosureEntityList = categoryClosureRepository.findAllById_ParentId(categoryId);
+        List<Integer> categoryIdList = new ArrayList<>();
+        for(CategoryClosureEntity c : categoryClosureEntityList){
+            categoryIdList.add(c.getId().getChildId());
+        }
+
+        /* remove from category closure */
+        for(Integer i : categoryIdList) {
+            categoryClosureRepository.deleteAllByChild_CategoryId_OrParent_CategoryId(i, i);
+        }
+
+        /* get problem id list */
+        List<CategoryProblemEntity> categoryProblemEntityList = new ArrayList<>();
+        for(Integer i : categoryIdList) {
+            categoryProblemEntityList.addAll(categoryProblemRepository.findById_CategoryId(i));
+        }
+
+        List<Integer> problemIdList = new ArrayList<>();
+        boolean flag;
+        for(CategoryProblemEntity c : categoryProblemEntityList){
+            flag = true;
+            List<CategoryProblemEntity> tmpList = categoryProblemRepository.findAllById_ProblemId(c.getId().getProblemId());
+            for(CategoryProblemEntity e : tmpList){
+                if(!categoryProblemEntityList.contains(e)){
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag) {
+                problemIdList.add(c.getId().getProblemId());
+            }
+        }
+
+        /* remove from category problem */
+        /* remove from categories */
+        for(Integer i : categoryIdList) {
+            categoryProblemRepository.deleteAllById_CategoryId(i);
+            categoryRepository.deleteAllByCategoryId(i);
+        }
+
+        /* add to category problem */
+        for(Integer i : problemIdList){
+            categoryProblemRepository.save(
+                    new CategoryProblemEntity(
+                            new CategoryProblemId(
+                                    groupRepository.findById(groupId).get().getRootCategoryId().getCategoryId(),
+                                    i
+                            ),
+                            groupRepository.findById(groupId).get().getRootCategoryId(),
+                            problemRepository.findById(i).get()
+
+                    )
+            );
+        }
 
         responseDto.setMessage("SUCCESS");
 
@@ -188,16 +236,12 @@ public class SoominServiceImpl implements SoominService{
             categoryIdList.add(c.getId().getChildId());
         }
 
-        System.out.println("categoryIdList = " + categoryIdList);
-
         /* find all problems of the categories */
         List<CategoryProblemEntity> categoryProblemEntityList = new ArrayList<>();
 
         for(Integer i : categoryIdList){
             categoryProblemEntityList.addAll(categoryProblemRepository.findById_CategoryId(i));
         }
-
-        System.out.println("categoryProblemEntityList = " + categoryProblemEntityList);
 
         List<ProblemEntity> problemEntityList = new ArrayList<>();
         for (CategoryProblemEntity c : categoryProblemEntityList) {

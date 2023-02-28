@@ -28,31 +28,11 @@ public interface CategoryClosureRepository extends JpaRepository<CategoryClosure
             nativeQuery = true)
     void createCategory(@Param("newId") Integer newId, @Param("parentId") Integer parentId);
 
-    /* for removing a category */
-    @Modifying
     @Transactional
-    @Query(value = "DROP TABLE IF EXISTS temp_closure_table", nativeQuery = true)
-    void removeCategory_dropTempClosureTable();
+    List<CategoryClosureEntity> findAllById_ParentId(Integer childId);
 
-    @Modifying
     @Transactional
-    @Query(value = "CREATE TABLE temp_closure_table AS SELECT child_category_id FROM category_closure WHERE parent_category_id = :curId", nativeQuery = true)
-    void removeCategory_createTempClosureTable(@Param("curId") Integer curId);
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM category_closure WHERE parent_category_id IN (SELECT child_category_id FROM temp_closure_table) OR child_category_id IN (SELECT child_category_id FROM temp_closure_table)", nativeQuery = true)
-    void removeCategory_deleteFromCategoryClosure();
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM category_problems WHERE category_entity_category_id IN (SELECT child_category_id FROM temp_closure_table)", nativeQuery = true)
-    void removeCategory_deleteFromCategoryProblems();
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM categories WHERE category_id IN (SELECT child_category_id FROM temp_closure_table)", nativeQuery = true)
-    void removeCategory_deleteFromCategories();
+    void deleteAllByChild_CategoryId_OrParent_CategoryId(Integer child_categoryId, Integer parent_categoryId);
 
     @Modifying
     @Transactional
