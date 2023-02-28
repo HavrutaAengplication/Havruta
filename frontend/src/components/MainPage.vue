@@ -24,7 +24,7 @@
 <script>
 import Popup from '@/components/CreateGroup.vue'
 import axios from 'axios'
-import groupData from '@/groupData.json'
+import groupData from '@/assets/groupData.json'
 import {BASE_URL} from "@/config";
 
 export default {
@@ -58,43 +58,6 @@ export default {
     }
   },
   methods: {
-    /*
-    delete(id) {
-      http
-        .delete("/api/sample/sample/" + id)
-        .then(response => {
-          const { data } = response
-          console.log(data)
-        })
-        .catch(error => {
-          alert(error)
-        })
-    },
-    create(id, params) {
-      http
-        .post("/api/sample/sample/", params)
-        .then(response => {
-          const { data } = response
-          console.log(data)
-        })
-        .catch(error => {
-          alert(error)
-        })
-      },
-      update(id, params) {
-        http
-          .put("/api/sample/sample/" + id, {
-            params: params,
-          })
-          .then(response => {
-            const { data } = response
-            console.log(data)
-          })
-          .catch(error => {
-            alert(error)
-          })
-      },
-      */
     getGroup(){
       let params = {}
       let headers = {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc3NTU3NTc4LCJleHAiOjE2Nzc1OTM1Nzh9.41fGwW_LgMYOnSDkvGYt0JV9GOQOZC-uejooDgUEXFU"};
@@ -108,6 +71,7 @@ export default {
             console.log(data)
             console.log(data.groupList)
             this.groupList = data.groupList
+
           })
           .catch(error => {
             alert(error)

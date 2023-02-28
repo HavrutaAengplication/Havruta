@@ -1,7 +1,7 @@
 <template>
-  <div v-for="(problem, index) in problems" :key="index">
+  <div v-for="(problem, pindex) in problems" :key="pindex">
     <div class="problem-number">
-      <h2>Problem {{ index + 1 }}</h2>
+      <h2>Problem {{ pindex + 1 }}</h2>
 <!--        <div v-if="problem.correct" class="answer-correct">-->
 <!--          O-->
 <!--        </div>-->
@@ -15,7 +15,7 @@
         <ul>
           <li v-for="(item, itemIndex) in problem.problemCandidateList" :key="itemIndex">
             <label>
-              <input type="radio" v-model="problem.selectedItem" :value="item" />
+              <input type="radio" v-model="this.userAnswer[pindex]" :value="item" />
               {{ item }}
             </label>
           </li>
@@ -23,18 +23,18 @@
       </div>
       <div v-else>
         <label></label>
-        <input v-model="problem.userAnswer" placeholder="Your Answer" />
+        <input v-model="this.userAnswer[pindex]" placeholder="Your Answer" />
       </div>
     </div>
 
     <div><h1></h1></div>
 
     <div class="left-align">
-      <button @click="scoreProblem(index)">Score</button>
+      <button @click="scoreProblem(pindex)">Score</button>
     </div>
-    <div v-if="problem.scored">
-      <span :class="{correct: problem.correct, incorrect: !problem.correct}">
-        {{ problem.correct ? "O" : "X" }}
+    <div v-if="this.scored[pindex]">
+      <span :class="{correct: this.correct[pindex], incorrect: !this.correct[pindex]}">
+        {{ this.correct[pindex] ? "O" : "X" }}
       </span>
     </div>
     <div class="problem-devider"></div>
@@ -45,13 +45,16 @@
 </template>
 
 <script>
-// import axios from 'axios';
+ import axios from 'axios';
+ import {BASE_URL, HEADERS} from "@/config";
 
 export default {
   data() {
     return {
       problems: [],
-      solutions: [],
+      userAnswer: [],
+      scored: [],
+      correct: [],
       categoryProblemList : [
         {
           problemId: 0,
@@ -97,34 +100,38 @@ export default {
       ]
     }
   },
+  computed: {
+    groupId() {
+      return this.$route.params.groupId;
+    },
+    categoryId() {
+      return this.$route.params.categoryId;
+    }
+  },
   mounted() {
-    this.problems = this.categoryProblemList;
-    // axios.get('/api/problems')
-    //     .then(response => {
-    //       this.problems = response.data;
-    //       this.selected = new Array(this.problems.length).fill(-1);
-    //     });
+    let numProblem = this.categoryProblemList.length
+    this.getProblems()
+    this.userAnswer = new Array(numProblem).fill(0)
+    this.scored = new Array(numProblem).fill(false)
+    this.correct = new Array(numProblem).fill(false)
   },
   methods: {
+    getProblems() {
+      axios
+          .get(`${BASE_URL}/groups/${this.groupId}/categories/${this.categoryId}`, {
+            headers: HEADERS
+          })
+          .then(response => {
+            console.log(response)
+            this.problems = response.categoryProblemList
+          })
+    },
     toggleItems(index) {
       this.problems[index].showItems = !this.problems[index].showItems;
     },
     scoreProblem(index) {
-      const problem = this.problems[index];
-      if (problem.problemType==0) {
-        if (problem.selectedItem === problem.problemAnswer) {
-          problem.correct = true;
-        } else {
-          problem.correct = false;
-        }
-      }
-      else {
-        if (problem.userAnswer === problem.problemAnswer)
-          problem.correct = true;
-        else
-          problem.correct = false;
-      }
-      problem.scored = true;
+      this.correct[index] = (this.userAnswer === this.problems[index].problemAnswer)
+      this.scored[index] = true;
     },
     scoreAll() {
       const numProblems = this.problems.length;
