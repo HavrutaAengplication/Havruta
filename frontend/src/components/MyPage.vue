@@ -2,19 +2,20 @@
   <div class="bg-gray" :class="{ active : popupview }">
     <div class="inside-popup">
       <form v-on:submit="changeNickname">
-        <h1>Change Nickname</h1>
+        <h1>Change Username</h1>
         <input type="text" v-model="nickname">
         <button>submit</button>
       </form>
     </div>
   </div>
 
-  <button @click="openPopup"> Change Nickname</button>
+  <h1>{{nickname}}</h1>
+  <button @click="openPopup"> Change Username</button>
   <div>
     <p>My Groups</p>
     <ul>
       <li v-for="group in myGroups" :key="group.id">
-        <router-link :to="'/groups/' + group.id">{{ group.name }}</router-link>
+        <router-link :to="'/groups/' + group.groupId">{{ group.groupName }}</router-link>
       </li>
     </ul>
   </div>
@@ -31,6 +32,7 @@
 
 <script>
 import axios from 'axios'
+import {BASE_URL, HEADERS} from "@/config";
 export default {
   name: "MyPage",
   data() {
@@ -45,7 +47,7 @@ export default {
     }
   },
   mounted() {
-    // this.getMyGroupList();
+     this.getMyGroupList();
   },
   methods: {
     openPopup() {
@@ -57,15 +59,20 @@ export default {
       api 넣어서 하면 proxy로 변환 되는지 check
      */
     async changeNickname() {
-      const response = await axios.put("http://localhost:8080/api/mypage");
+      const response = await axios.put(`${BASE_URL}/mypage`, {"userName" : this.nickname}, {
+        headers: HEADERS
+      });
       console.log(response);
       this.popupview = false;
     },
 
     async getMyGroupList() {
-      const response = await axios.get("http://localhost:8080/api/mypage");
+      const response = await axios.get(`${BASE_URL}/mypage`, {
+        headers: HEADERS
+      });
       console.log(response);
-      this.myGroups = response.data;
+      this.myGroups = response.data.groupList;
+      this.nickname = response.data.userName;
     },
 
     async withdraw() {
