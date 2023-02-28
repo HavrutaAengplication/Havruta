@@ -770,7 +770,28 @@ public class HavrutaServiceImpl implements HavrutaService {
     public CategoryListDto getGroupCategory(Integer groupId) {
         CategoryListDto responseDto = new CategoryListDto();
 
+        checkGroupIdValid(groupId);
         /* same task on group page */
+        /* from wonbin */
+        GroupEntity groupEntity = groupRepository.findById(groupId).get();
+
+        List<CategoryClosureEntity> categoryClosureEntityList = havrutaDao.findClosuresByRootId(groupEntity.getRootCategoryId().getCategoryId());
+        List<CategoryDto> categoryDtoList = new ArrayList<CategoryDto>();
+        for(CategoryClosureEntity categoryClosureEntity : categoryClosureEntityList){
+            CategoryEntity categoryEntity = new CategoryEntity();
+            Optional<CategoryEntity> categorySerachResult = havrutaDao.findCategoryById(categoryClosureEntity.getChild().getCategoryId());
+            if(categorySerachResult.isPresent()) {//멤버 검색 결과 확인
+                categoryEntity = categorySerachResult.get();
+            }else {
+                throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            }
+            CategoryDto categoryDto = new CategoryDto();
+            categoryDto.setCategoryId(categoryEntity.getCategoryId());
+            categoryDto.setCategoryName(categoryEntity.getCategoryName());
+            categoryDto.setDepth(categoryClosureEntity.getDepth());
+            categoryDtoList.add(categoryDto);
+        }
+        responseDto.setCategoryList(categoryDtoList);
 
         return responseDto;
     }
