@@ -4,6 +4,7 @@ import com.example.havruta.data.dto.GroupDto;
 import com.example.havruta.data.dto.GroupListResponseDto;
 import com.example.havruta.data.dto.NewGroupRequestDto;
 import com.example.havruta.data.dto.ResponseDto;
+import com.example.havruta.data.entity.GroupEntity;
 import com.example.havruta.service.HavrutaService;
 import com.example.havruta.service.HavrutaServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,7 @@ public class MainPageController {
             @RequestHeader("Authorization") String token,
             @RequestBody NewGroupRequestDto reqbody
     ){
-        ResponseDto dto = new ResponseDto();
-        dto.setMessage("HHH");
+        ResponseDto dto = havrutaService.newGroup(token,reqbody);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/mainpage"))

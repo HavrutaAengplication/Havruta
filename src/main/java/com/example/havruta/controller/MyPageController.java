@@ -1,6 +1,7 @@
 package com.example.havruta.controller;
 
 import com.example.havruta.data.dto.*;
+import com.example.havruta.service.HavrutaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +11,17 @@ import java.net.URI;
 @RestController
 @RequestMapping("/mypage")
 public class MyPageController {
+    private final HavrutaService havrutaService;
+
+    public MyPageController(HavrutaService havrutaService) {
+        this.havrutaService = havrutaService;
+    }
+
     @GetMapping("")
     public ResponseEntity<MyPageResponseDto> myPageController(
             @RequestHeader("Authorization") String token
     ){
-        MyPageResponseDto dto = new MyPageResponseDto();
+        MyPageResponseDto dto = havrutaService.myPage(token);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/targetPageURI"))
@@ -26,7 +33,7 @@ public class MyPageController {
             @RequestHeader("Authorization") String token,
             @RequestBody UserNameDto reqbody
     ){
-        ResponseDto dto =new ResponseDto();
+        ResponseDto dto = havrutaService.changeUserName(token, reqbody.getUserName());
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/targetPageURI"))
@@ -37,7 +44,7 @@ public class MyPageController {
     public ResponseEntity<ResponseDto> deleteUserController(
             @RequestHeader("Authorization") String token
     ){
-        ResponseDto dto =new ResponseDto();
+        ResponseDto dto = havrutaService.deleteUser(token);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/targetPageURI"))
@@ -45,10 +52,10 @@ public class MyPageController {
     }
 
     @GetMapping("/problems")
-    public ResponseEntity<ProblemListDto> myProblemController(
+    public ResponseEntity<MyProblemListDto> myProblemController(
             @RequestHeader("Authorization") String token
     ){
-        ProblemListDto dto = new ProblemListDto();
+        MyProblemListDto dto = havrutaService.getMyProblemList(token);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/targetPageURI"))
@@ -61,7 +68,7 @@ public class MyPageController {
             @RequestBody ProblemDto problemDto,
             @PathVariable Integer problemId
     ){
-        ResponseDto dto = new ResponseDto();
+        ResponseDto dto = havrutaService.updateProblem(token,problemId,problemDto);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/targetPageURI"))
@@ -73,7 +80,7 @@ public class MyPageController {
             @RequestHeader("Authorization") String token,
             @PathVariable Integer problemId
     ){
-        ResponseDto dto = new ResponseDto();
+        ResponseDto dto = havrutaService.deleteProblem(token,problemId);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .location(URI.create("/targetPageURI"))

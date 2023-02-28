@@ -7,7 +7,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryIdDto {
+public class CategoryIdRequestDto {
     private Integer categoryId;
-    private String categoryName;
 }

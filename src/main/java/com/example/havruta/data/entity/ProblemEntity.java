@@ -30,18 +30,18 @@ public class ProblemEntity {
     private UserEntity userId;
 
     @Column(name = "type")
-    private String problemType;
+    private Integer problemType;
 
     @Column(name = "question")
     private String problemQuestion;
 
     @Type(type = "json")
     @Column(name = "item", columnDefinition = "json")
-    private Map<String, Integer> problemCandidate = new HashMap<>();
+    private Map<Integer, String> problemCandidate = new HashMap<>();
     @Column(name = "answer")
     private String problemAnswer;
 
     @Type(type = "json")
     @Column(name = "image", columnDefinition = "json")
-    private Map<String, Integer> problemImage = new HashMap<>();
+    private Map<Integer, String> problemImage = new HashMap<>();
 }

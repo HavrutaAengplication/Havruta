@@ -1,9 +1,6 @@
 package com.example.havruta.controller;
 
-import com.example.havruta.data.dto.LoginRequestDto;
-import com.example.havruta.data.dto.ResponseDto;
-import com.example.havruta.data.dto.SignInRequestDto;
-import com.example.havruta.data.dto.UserNameDto;
+import com.example.havruta.data.dto.*;
 import com.example.havruta.security.JwtUtil;
 import com.example.havruta.service.HavrutaService;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +25,7 @@ public class UsersController {
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto> signInController(
             @RequestBody SignInRequestDto reqbody) {
-        ResponseDto dto = havrutaService.signIn(reqbody);
+        ResponseDto dto = havrutaService.signUp(reqbody);
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -68,8 +65,10 @@ public class UsersController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<ResponseDto> createAuthenticationToken(){
-        final String jwt = jwtUtil.generateToken(123);
+    public ResponseEntity<ResponseDto> createAuthenticationToken(
+            @RequestBody UserDto req
+    ){
+        final String jwt = jwtUtil.generateToken(req.getUserId());
         ResponseDto dto = new ResponseDto();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + jwt);

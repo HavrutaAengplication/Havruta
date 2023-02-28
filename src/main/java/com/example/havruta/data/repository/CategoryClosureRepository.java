@@ -13,7 +13,7 @@ import java.util.List;
 public interface CategoryClosureRepository extends JpaRepository<CategoryClosureEntity, ClosureId> {
 
     public List<CategoryClosureEntity> findById_ParentId(Integer parentId);
-
+    public List<CategoryClosureEntity> findById_ChildId(Integer childId);
     /*
         Insert rows for a new category
         ex. new category id : 8

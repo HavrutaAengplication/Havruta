@@ -9,10 +9,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProblemListDto {
+public class MyProblemDto {
     private Integer groupId;
-    private List<CategoryIdDto> categoryIdList;
-    private Boolean problemType;
+    private String groupName;
+    private List<PathDto> categoryIdList;
+    private Integer problemType;
     private String problemQuestion;
     private List<ItemDto> problemCandidate;
     private String problemAnswer;
