@@ -53,9 +53,6 @@ export default {
     return {
       problemID : 0,
       categories: [
-        { id: 1, name: "Science" },
-        { id: 2, name: "Mathematics" },
-        { id: 3, name: "History" },
       ],
       selectedCategory: 1,
       questionName: "",
@@ -72,9 +69,6 @@ export default {
     },
     headers() {
       return {Authorization: this.token}
-    },
-    isAdmin() {
-      return this.$route.query.isAdmin
     },
     problemId() {
       return this.$route.params.problemId
