@@ -96,6 +96,11 @@ export default {
           })
     },
     removeCategory() {
+      /*
+          groupId로 json file 안에서 group 안의 category 모두 가져오기
+          그 중 삭제할 category 선택 후 categoryId 설정
+       */
+
       axios.
         delete("http://localhost:8080/groups/" +
           this.groupId + "/categories/" + this.categoryId,
