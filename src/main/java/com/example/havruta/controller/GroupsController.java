@@ -218,7 +218,7 @@ public class GroupsController {
     @PostMapping("/problems")
     public ResponseEntity<ResponseDto> newProblemController(
             @RequestHeader("Authorization") String token,
-            @RequestBody ProblemDto reqbody,
+            @RequestBody ProblemRequestDto reqbody,
             @PathVariable Integer groupId
     ){
         ResponseDto responseDto = soominService.makeNewProblem(token, reqbody, groupId);

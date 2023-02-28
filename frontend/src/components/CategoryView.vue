@@ -7,13 +7,12 @@ export default {
   data() {
     return {
       isOpen: false,
-      localModel: null
+      localModel: null,
+      newCateName: '',
+      openNewCategory: false,
     }
   },
   computed: {
-    isFolder() {
-      return this.localModel.children && this.localModel.children.length
-    },
     thisModel() {
       return this.localModel;
     }
@@ -24,21 +23,21 @@ export default {
   },
   methods: {
     toggle() {
-      if (this.isFolder) {
         this.isOpen = !this.isOpen
-      }
     },
-    changeType() {
-      if (!this.isFolder) {
-        this.localModel.children = []
-        this.addChild()
-        this.isOpen = true
-      }
+    changeName() {
+      this.localModel.name = this.newCateName
     },
-    addChild() {
+    createCategory() {
       this.localModel.children.push({
-        name: 'new stuff'
+        name: '새 카테고리'
       })
+      // axios로 카테고리 생성 request 해주는 구문 넣어야 함!
+
+      this.openNewCategory = false
+    },
+    openCreateCategory(){
+      this.openNewCategory = true
     }
   }
 }
@@ -46,24 +45,19 @@ export default {
 
 <template>
   <li>
-    <div
-        :class="{ bold: isFolder }"
-        @click="toggle"
-        @dblclick="changeType">
+    <div class="bold" @click="toggle" @dblclick="changeName">
       {{ model.name }}
-      <span v-if="isFolder">[{{ isOpen ? '-' : '+' }}]</span>
+      <span>[{{ isOpen ? '-' : '+' }}]</span>
     </div>
-    <ul v-show="isOpen" v-if="isFolder">
-      <!--
-        A component can recursively render itself using its
-        "name" option (inferred from filename if using SFC)
-      -->
-      <CategoryView
-          class="item"
-          v-for="model in model.children" :key="model.name"
-          :model="model">
+    <ul v-show="isOpen">
+      <CategoryView class="item" v-for="model in model.children" :key="model.name" :model="model">
       </CategoryView>
-      <li class="add" @click="addChild">+</li>
+      <div v-if="openCreateCategory()">
+        <input v-model="newCateName" @keyup.enter="createCategory()" placeholder="새 카테고리 이름">
+      </div>
+      <div v-else>
+        <button class="add" @click="openCreateCategory()">Add New Category</button>
+      </div>
     </ul>
   </li>
 </template>

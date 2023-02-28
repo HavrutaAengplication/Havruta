@@ -26,22 +26,32 @@ public class ProblemEntity {
     private Integer problemId;
 
     @ManyToOne(targetEntity = UserEntity.class)
-    @JoinColumn(name = "user_ID", nullable = false)
+    @JoinColumn(name = "user_ID", nullable = true)
     private UserEntity userId;
 
     @Column(name = "type")
-    private String problemType;
+    private Integer problemType;
 
     @Column(name = "question")
     private String problemQuestion;
 
-    @Type(type = "json")
     @Column(name = "item", columnDefinition = "json")
-    private Map<String, Integer> problemCandidate = new HashMap<>();
+    @Convert(converter = JsonConverter.class)
+    private Map<Integer, String> problemCandidate = new HashMap<>();
     @Column(name = "answer")
     private String problemAnswer;
 
-    @Type(type = "json")
     @Column(name = "image", columnDefinition = "json")
-    private Map<String, Integer> problemImage = new HashMap<>();
+    @Convert(converter = JsonConverter.class)
+    private Map<Integer, String> problemImage = new HashMap<>();
+
+    @PostLoad
+    private void initializeJsonFields() {
+        if (problemCandidate == null) {
+            problemCandidate = new HashMap<>();
+        }
+        if (problemImage == null) {
+            problemImage = new HashMap<>();
+        }
+    }
 }
