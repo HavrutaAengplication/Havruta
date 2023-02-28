@@ -247,10 +247,13 @@ public class SoominServiceImpl implements SoominService{
             categoryProblemEntityList.addAll(categoryProblemRepository.findById_CategoryId(i));
         }
 
-        List<ProblemEntity> problemEntityList = new ArrayList<>();
+        List<ProblemEntity> duplicateProblemEntityList = new ArrayList<>();
         for (CategoryProblemEntity c : categoryProblemEntityList) {
-            problemEntityList.add(c.getProblemEntity());
+            duplicateProblemEntityList.add(c.getProblemEntity());
         }
+
+        Set<ProblemEntity> problemEntitySet = new HashSet<>(duplicateProblemEntityList);
+        List<ProblemEntity> problemEntityList = new ArrayList<>(problemEntitySet);
 
         List<CategoryProblemDto> categoryProblemDtoList = new ArrayList<>();
 
