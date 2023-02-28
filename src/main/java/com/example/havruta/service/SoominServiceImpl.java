@@ -97,7 +97,8 @@ public class SoominServiceImpl implements SoominService{
         1. check if group id is valid
         2. check if token is group admin
         3. check if category id is descendant of group root category
-        4. repository tasks
+        4. check if category id is root category
+        5. repository tasks
          */
         ResponseDto responseDto = new ResponseDto();
 
@@ -108,10 +109,10 @@ public class SoominServiceImpl implements SoominService{
         //checkUserGroupAdmin(userId, groupId);
         /* 3. check if category id is descendant of group root category */
         checkCategoryInGroup(categoryId, groupId);
-        /* 4. repository tasks */
-        /* TODO: move the problems to root category
-        TODO: check if category is not root category
-         */
+        /* 4. check if category id is root category */
+        checkCategoryRoot(categoryId, groupId);
+        /* 5. repository tasks */
+        /* TODO: move the problems to root category */
         categoryClosureRepository.removeCategory_dropTempClosureTable();
         categoryClosureRepository.removeCategory_createTempClosureTable(categoryId); /* maybe need some lock or semaphore (if this was a multithreaded program) */
         categoryClosureRepository.removeCategory_deleteFromCategoryClosure();
@@ -395,6 +396,15 @@ public class SoominServiceImpl implements SoominService{
                     /* already a member */
                 }
             }
+        }
+    }
+
+    /* throws exception if categoryId is rootCategoryId of groupId */
+    private void checkCategoryRoot(Integer categoryId, Integer groupId){
+        Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
+
+        if(groupEntity.get().getRootCategoryId().getCategoryId().equals(categoryId)){
+            /* TODO: exception handling */
         }
     }
 }
