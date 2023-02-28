@@ -25,6 +25,7 @@
 import Popup from '@/components/CreateGroup.vue'
 import axios from 'axios'
 import groupData from '@/groupData.json'
+import {BASE_URL} from "../../vue.config";
 
 export default {
   components:{
@@ -96,7 +97,7 @@ export default {
       let params = {}
       let headers = {"Authorization" : "temp"};
       axios
-          .get("http://localhost:8080/home", {
+          .get(`${BASE_URL}/home`, {
             params: params,
             headers: headers
           })

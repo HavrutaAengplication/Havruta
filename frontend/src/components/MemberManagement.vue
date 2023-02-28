@@ -49,6 +49,7 @@
 
 <script>
 import axios from 'axios'
+import {BASE_URL} from "../../vue.config";
 export default {
   data() {
     return {
@@ -92,7 +93,7 @@ export default {
   methods: {
     getMembers() {
       axios
-          .get("http://localhost:8080/groups/" + this.groupId + "/members", {
+          .get(`${BASE_URL}/groups/${this.groupId}/members`, {
             headers: this.headers
           })
           .then(response => console.log(response))
@@ -111,7 +112,7 @@ export default {
       }
 
       axios
-          .put("http://localhost:8080/groups/" + this.groupId + "/members", {
+          .put(`${BASE_URL}/groups/${this.groupId}/members`, {
             headers: this.headers,
             body: {
               newAdminId: this.members[index].id
@@ -135,7 +136,7 @@ export default {
       }
 
       axios
-          .delete("http://localhost:8080/groups/" + this.groupId + "/members/" + userId, {
+          .delete(`${BASE_URL}/groups/${this.groupId}/members/${userId}`, {
             header: this.headers
           })
           .then(response => {
@@ -155,7 +156,7 @@ export default {
       const userId = this.joinList[index].id
 
       axios
-          .put("http://localhost:8080/groups/" + this.groupId + "/members/" + userId, {
+          .put(`${BASE_URL}/groups/${this.groupId}/members/${userId}`, {
             header: this.headers
           })
           .then(response => {
