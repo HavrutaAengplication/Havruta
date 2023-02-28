@@ -11,12 +11,12 @@
     <div><h1></h1></div>
 
     <div class="items">
-      <div v-if="problem.problemType==0">
+      <div v-if="problem.problemType===0">
         <ul>
-          <li v-for="(item, itemIndex) in problem.problemCandidateList" :key="itemIndex">
+          <li v-for="(item, itemIndex) in problem.problemCandidate" :key="itemIndex">
             <label>
               <input type="radio" v-model="this.userAnswer[pindex]" :value="item" />
-              {{ item }}
+              {{ item.item }}
             </label>
           </li>
         </ul>
@@ -55,49 +55,7 @@ export default {
       userAnswer: [],
       scored: [],
       correct: [],
-      categoryProblemList : [
-        {
-          problemId: 0,
-          problemType: 0,
-          problemQuestion: "P1 descriptionP1 descriptionP1 descriptionP1 description" +
-              "P1 descriptionP1 descriptionP1 descriptionP1 descriptionP1 descriptionP1 description" +
-              "P1 descriptionP1 descriptionP1 descriptionP1 descriptionP1 descriptionP1 description",
-          problemCandidateList: [ "Item1", "Item2", "Item3", "Item4" ],
-          problemAnswer: "Item1",
-          problemImage: [ "imgsrc1", "imgsrc2" ],
-          userAnswer: "",
-          selectedItem: "",
-          scored: false,
-          correct: false,
-          showItems: false,
-        },
-        {
-          problemId: 1,
-          problemType: 1,
-          problemQuestion: "P2 description",
-          problemCandidateList: [ "Item1", "Item2", "Item3", "Item4" ],
-          problemAnswer: "Answer",
-          problemImage: [ "imgsrc1", "imgsrc2" ],
-          userAnswer: "",
-          selectedItem: "",
-          scored: false,
-          correct: false,
-          showItems: false,
-        },
-        {
-          problemId: 2,
-          problemType: 0,
-          problemQuestion: "P3 description",
-          problemCandidateList: [ "Item1", "Item2", "Item3", "Item4" ],
-          problemAnswer: "Item3",
-          problemImage: [ "imgsrc1", "imgsrc2" ],
-          userAnswer: "",
-          selectedItem: "",
-          scored: false,
-          correct: false,
-          showItems: false,
-        },
-      ]
+      categoryProblemList : [],
     }
   },
   computed: {

@@ -1,5 +1,7 @@
 package com.example.havruta.security;
 
+import com.example.havruta.errorAndException.ErrorCode;
+import com.example.havruta.errorAndException.NoGroupException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -40,7 +42,12 @@ public class JwtUtil {
     }
 
     public Integer extractUserId(String token) {
-        return Integer.valueOf(extractClaim(token, Claims::getSubject));
+        try {
+            return Integer.valueOf(extractClaim(token, Claims::getSubject));
+        }catch(Exception e){
+            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+        }
+
     }
 
     public Date extractExpiration(String token) {
