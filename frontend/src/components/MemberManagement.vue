@@ -10,8 +10,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(member, index) in members" :key="member.id">
-        <td>{{ member.name }}</td>
+      <tr v-for="(member, index) in members" :key="index">
+        <td>{{ member.userName }}</td>
         <td>
           <input v-if="!member.isAdmin" type="checkbox" @click="addAdmin(index)" v-model="member.isAdmin">
           <input v-else type="checkbox" checked disabled>
@@ -36,10 +36,10 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(member, index) in joinList" :key="member.id">
-        <td>{{ member.name }}</td>
+      <tr v-for="(member, index) in joinList" :key="index">
+        <td>{{ member.userName }}</td>
         <td>
-          <button v-if="!member.isAdmin" @click="registerMember(index)">Accept</button>
+          <button @click="registerMember(index)">Accept</button>
         </td>
       </tr>
       </tbody>
@@ -49,34 +49,12 @@
 
 <script>
 import axios from 'axios'
-import {BASE_URL} from "@/config";
+import {BASE_URL, HEADERS} from "@/config";
 export default {
   data() {
     return {
-      members: [
-        { id: 1, name: 'John', isAdmin: true },
-        { id: 2, name: 'Mary', isAdmin: false },
-        { id: 3, name: 'Steve', isAdmin: true },
-        { id: 4, name: 'Jane', isAdmin: false },
-        { id: 5, name: 'Bob', isAdmin: false },
-        { id: 6, name: 'Alice', isAdmin: false },
-        { id: 7, name: 'David', isAdmin: true },
-        { id: 8, name: 'Sarah', isAdmin: false },
-        { id: 9, name: 'Tom', isAdmin: false },
-        { id: 10, name: 'Emily', isAdmin: true },
-      ],
-      joinList: [
-        { id: 11, name: 'John' },
-        { id: 12, name: 'Alice' },
-        { id: 13, name: 'Bob' },
-        { id: 14, name: 'Eva' },
-        { id: 15, name: 'Mike' },
-        { id: 16, name: 'Kate' },
-        { id: 17, name: 'David' },
-        { id: 18, name: 'Linda' },
-        { id: 19, name: 'Chris' },
-        { id: 20, name: 'Sarah' }
-      ]
+      members: [],
+      joinList: [],
     }
   },
   computed: {
@@ -94,9 +72,13 @@ export default {
     getMembers() {
       axios
           .get(`${BASE_URL}/groups/${this.groupId}/members`, {
-            headers: this.headers
+            headers: HEADERS
           })
-          .then(response => console.log(response))
+          .then(response => {
+            console.log(response)
+            this.members = response.data.memberList
+            this.joinList = response.data.joinList
+          })
           .catch(error => alert(error))
     },
     addAdmin(index) {
@@ -111,13 +93,14 @@ export default {
         return
       }
 
+      console.log("index: " + index)
+      console.log(this.members[index].userId)
       axios
-          .put(`${BASE_URL}/groups/${this.groupId}/members`, {
-            headers: this.headers,
-            body: {
-              newAdminId: this.members[index].id
-            }
-      })
+          .put(`${BASE_URL}/groups/${this.groupId}/members`,
+              { "newAdminId": this.members[index].userId },
+              {
+                headers: HEADERS,
+              })
           .then(response => {
             console.log(response)
             this.getMembers()
@@ -126,7 +109,7 @@ export default {
     },
     deleteMember(index) {
       // /groups/{groupId}/members/{userId}
-      const userId = this.members[index].id
+      const userId = this.members[index].userId
       console.log(userId);
 
       if (!window.confirm(
@@ -137,7 +120,7 @@ export default {
 
       axios
           .delete(`${BASE_URL}/groups/${this.groupId}/members/${userId}`, {
-            header: this.headers
+            headers: HEADERS
           })
           .then(response => {
             console.log(response)
@@ -153,12 +136,14 @@ export default {
         return
       }
 
-      const userId = this.joinList[index].id
+      const userId = this.joinList[index].userId
 
       axios
-          .put(`${BASE_URL}/groups/${this.groupId}/members/${userId}`, {
-            header: this.headers
-          })
+          .put(`${BASE_URL}/groups/${this.groupId}/members/${userId}`,
+              {},
+              {
+                headers: HEADERS
+              })
           .then(response => {
             console.log(response)
             this.getMembers()
@@ -167,7 +152,7 @@ export default {
     }
   },
   mounted() {
-    // this.getMembers()
+     this.getMembers()
   }
 }
 </script>
