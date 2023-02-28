@@ -136,6 +136,10 @@ public class SoominServiceImpl implements SoominService{
             flag = true;
             List<CategoryProblemEntity> tmpList = categoryProblemRepository.findAllById_ProblemId(c.getId().getProblemId());
             for(CategoryProblemEntity e : tmpList){
+                /*
+                if problem is in a category which won't be deleted,
+                don't have to move to root. exclude it
+                 */
                 if(!categoryProblemEntityList.contains(e)){
                     flag = false;
                     break;
