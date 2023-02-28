@@ -9,7 +9,7 @@
 
         <br><br>
         <ul>
-          <li v-for="group in filteredGroups" :key="group.id">{{ group.name }}</li>
+          <li v-for="group in filteredGroups" :key="group.groupId">{{ group.groupName }}</li>
         </ul>
         <input type="text" v-model="searchTerm" placeholder="Search for groups..." />
 
@@ -34,25 +34,27 @@ export default {
   data() {
     return {
       popupVisible: false,
-      groups: [
-        { id: 1, name: '운영체제' },
-        { id: 2, name: '알고리즘' },
-        { id: 3, name: '네트워크' }
-      ],
       searchTerm: '',
       groupList: "",
-      groupName: "",
+      groupName: [],
       subjectName: "",
     };
   },
   computed: {
     filteredGroups() {
-      return this.groups.filter(group => {
-        return group.name.toLowerCase().includes(this.searchTerm.toLowerCase());
-      });
+      return this.groupList;
+      // return this.groupList.filter(group => {
+      //   return group.groupName.toLowerCase().includes(this.searchTerm.toLowerCase());
+      // });
     },
     testGroups() {
       return groupData.groups
+    },
+    headers() {
+      return {
+        "Authorization" : "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc3NTU3NTc4LCJleHAiOjE2Nzc1OTM1Nzh9.41fGwW_LgMYOnSDkvGYt0JV9GOQOZC-uejooDgUEXFU",
+        "Content-Type" : "application/json"
+      };
     }
   },
   methods: {
@@ -95,7 +97,7 @@ export default {
       */
     getGroup(){
       let params = {}
-      let headers = {"Authorization" : "temp"};
+      let headers = {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc3NTU3NTc4LCJleHAiOjE2Nzc1OTM1Nzh9.41fGwW_LgMYOnSDkvGYt0JV9GOQOZC-uejooDgUEXFU"};
       axios
           .get(`${BASE_URL}/home`, {
             params: params,
@@ -105,7 +107,7 @@ export default {
             const { data } = response
             console.log(data)
             console.log(data.groupList)
-            this.groups = data.groupList
+            this.groupList = data.groupList
           })
           .catch(error => {
             alert(error)
@@ -121,10 +123,24 @@ export default {
       this.unfreezeBody();
     },
     addGroup(name) {
-      const id = this.groups.length + 1;
-      this.groups.push({ id, name });
+      // const id = this.groups.length + 1;
+      // this.groups.push({ id, name });
       this.hidePopup();
       console.log(name);
+      axios
+          .post(`${BASE_URL}/home/new`,
+              {
+              "groupName" : name
+              },
+              {
+                headers: this.headers
+              }
+          )
+          .then(response => {
+            console.log(response)
+            this.getGroup()
+          })
+          .catch(error => console.log(error))
     },
     freezeBody() {
       document.body.style.overflow = 'hidden';
@@ -133,9 +149,8 @@ export default {
       document.body.style.overflow = 'auto';
     },
   },
-
-  created(){
-    // this.getGroup()
+  mounted() {
+     this.getGroup();
   },
 };
 </script>
