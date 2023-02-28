@@ -95,7 +95,7 @@ public class HavrutaServiceImpl implements HavrutaService {
                 groupDtoList.add(groupDto);
             }
             dto.setUserName(userEntity.get().getUserName());
-            dto.setGroups(groupDtoList);
+            dto.setGroupList(groupDtoList);
         }
         return dto;
     }

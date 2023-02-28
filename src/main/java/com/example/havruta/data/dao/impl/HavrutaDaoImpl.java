@@ -4,6 +4,7 @@ import com.example.havruta.data.dao.HavrutaDao;
 import com.example.havruta.data.entity.*;
 import com.example.havruta.data.entity.serializable.CategoryProblemId;
 import com.example.havruta.data.entity.serializable.ClosureId;
+import com.example.havruta.data.entity.serializable.MemberId;
 import com.example.havruta.data.repository.*;
 import org.springframework.stereotype.Component;
 
@@ -106,6 +107,7 @@ public class HavrutaDaoImpl implements HavrutaDao {
 
     @Override
     public List<ProblemEntity> getMyProblemList(UserEntity userEntity) {
+        System.out.println("userEntity.getUserId() = " + userEntity.getUserId());
         return problemRepository.findAllByUserId(userEntity);
     }
 

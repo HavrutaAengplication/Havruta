@@ -42,7 +42,7 @@ public class UsersController {
             3. userId 로 JwtToken 생성
         */
         UserNameDto dto = havrutaService.login(req);
-        final String jwt = jwtUtil.generateToken(123);
+        final String jwt = jwtUtil.generateToken(1);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + jwt);
 
