@@ -20,7 +20,7 @@
 
 <script>
 import axios from 'axios'
-import {BASE_URL} from "../../vue.config";
+import {BASE_URL} from "@/config";
 import ModifyGroupInfo from '@/components/ModifyGroupInfo.vue'
 
 export default {

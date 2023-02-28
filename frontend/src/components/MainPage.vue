@@ -25,7 +25,7 @@
 import Popup from '@/components/CreateGroup.vue'
 import axios from 'axios'
 import groupData from '@/groupData.json'
-import {BASE_URL} from "../../vue.config";
+import {BASE_URL} from "@/config";
 
 export default {
   components:{
