@@ -5,9 +5,10 @@
       <h1>새로운 문제 생성</h1>
       <div>
         <label for="category">문제 카테고리 : </label>
-        <select id="category" v-model="selectedCategory">
-          <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+        <select id="category" v-model="selectedCategory" multiple>
+          <option v-for="category in categories" :key="category.id" :value="category.id" @click="assignCategory()">{{ category.name }}</option>
         </select>
+        <div> 선택된 카테고리 : {{ selectedCategories }}</div>
       </div>
       <div>
         <label for="question-name">문제 이름 : </label>
@@ -21,15 +22,16 @@
         </select>
       </div>
       <div>
-        <label for="question-content">문제 내용 : </label>
+        <label for="question-content">문제 내용 : </label><br>
         <textarea id="question-content" v-model="questionContent"></textarea>
       </div>
       <div v-if="selectedQuestionType === 'multiple-choice'">
         <div v-for="(choice, index) in choices" :key="index">
-          <label>{{ index + 1 }}:</label>
-          <input v-model="choice">
-          <button @click="addChoice">Add Choice</button>
+          <input type="checkbox" @click="addAnswer(choice)"> <label>{{ index  }} : {{ choice }}</label>
         </div>
+        <input v-if="openNewChoice == true" v-model="newChoiceContent" @keyup.enter="addChoice()">
+        <button v-if="openNewChoice == false" @click="openNewChoice = true">Add Choice</button>
+        <div> {{ checkedChoices }}</div>
       </div>
       <div v-if="selectedQuestionType === 'short-answer'">
         <div>
@@ -43,7 +45,10 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
+  name: 'CategoryComponent',
   data() {
     return {
       categories: [
@@ -51,18 +56,31 @@ export default {
         { id: 2, name: "Mathematics" },
         { id: 3, name: "History" },
       ],
+      selectedCategories : [],
       selectedCategory: 1,
       questionName: "",
       selectedQuestionType: "multiple-choice",
       questionContent: "",
-      choices: [""],
+      choices: [],
+      checkedChoices: [],
       currentChoice: "",
       shortAnswer: "",
+      images: [],
+      openNewChoice: false,
+      newChoiceContent: "",
     };
   },
   methods: {
+    assignCategory() {
+      this.selectedCategories.push(this.selectedCategory)
+    },
     addChoice() {
-      this.choices.push("");
+      this.choices.push(this.newChoiceContent)
+      this.newChoiceContent = ""
+      this.openNewChoice = false
+    },
+    addAnswer(choice) {
+      this.checkedChoices.push(choice)
     },
     submitQuestion() {
       const question = {
@@ -78,13 +96,56 @@ export default {
       }
       this.$emit('close-modal');
       console.log(question);
+
+      axios.
+      post('http://localhost:8080/groups/' + this.groupId, {
+        headers : this.headers,
+        body : {
+          categoryList : this.categories,
+          problemType : this.selectedQuestionType,
+          problemCandidate : this.choices,
+          problemAnswer : this.answer,
+          problemImage : this.images
+        }
+      }).then(response => {
+        const data = response
+        console.log(data)
+      }).catch(error => {
+        alert(error)
+      })
       // submit the question to the server or perform some other action here
     },
   },
+  computed : {
+    token() {
+      return this.$route.query.token
+    },
+    headers() {
+      return {Authorization: this.token}
+    },
+    groupId() {
+      return this.$route.params.groupId
+    },
+  },
+  created() {
+    axios.get("http://localhost:8080/groups/" + this.groupId + "/problems",
+        {
+          headers: this.headers
+        }).then(response => {
+          const data = response
+      this.categories = data.categoryList
+        }).catch(error => {
+          alert(error)
+    })
+  }
 };
 </script>
 
 <style>
+div {
+  padding-top: 15px;
+}
+
 .modal,
 .overlay {
   width:100%;

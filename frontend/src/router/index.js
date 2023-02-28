@@ -4,7 +4,7 @@ import MyPage from "@/components/MyPage.vue";
 import Login from "@/components/KaKaoLogin.vue"
 import GroupPage from "@/components/GroupPage.vue";
 import MyProblems from "@/components/MyProblems.vue"
-// import CreateProblem from "@/components/CreateProblem.vue";
+import CreateProblem from "@/components/CreateProblem.vue";
 //import CreateGroup from "@/components/CategoryView.vue"
 import CategoryProblems from "@/components/CategoryProblems.vue"
 import GroupAdmin from "@/components/GroupAdmin.vue"
@@ -20,7 +20,7 @@ const routes = [
     { path: '/groups/:groupId/members', component: MemberManagement},
     { path: "/problems", name: "MyProblem", component: MyProblems},
     { path: "/groups", name: "GroupPage", component: GroupPage},
-    // { path: "/createproblem", component: CreateProblem },
+    { path: "/createproblem", component: CreateProblem },
     { path: "/categoryproblems", component: CategoryProblems},
 ]
 
