@@ -20,7 +20,7 @@ const routes = [
     { path: '/groups/:groupId/members', component: MemberManagement},
     { path: "/problems", name: "MyProblem", component: MyProblems},
     { path: "/groups", name: "GroupPage", component: GroupPage},
-    { path: "/createproblem", component: CreateProblem },
+    { path: "/groups/:groupId/problems", component: CreateProblem },
     { path: "/categoryproblems", component: CategoryProblems},
 ]
 
