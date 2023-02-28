@@ -97,7 +97,8 @@ public class SoominServiceImpl implements SoominService{
         1. check if group id is valid
         2. check if token is group admin
         3. check if category id is descendant of group root category
-        4. repository tasks
+        4. check if category id is root category
+        5. repository tasks
          */
         ResponseDto responseDto = new ResponseDto();
 
@@ -108,16 +109,68 @@ public class SoominServiceImpl implements SoominService{
         //checkUserGroupAdmin(userId, groupId);
         /* 3. check if category id is descendant of group root category */
         checkCategoryInGroup(categoryId, groupId);
-        /* 4. repository tasks */
-        /* TODO: move the problems to root category
-        TODO: check if category is not root category
-         */
-        categoryClosureRepository.removeCategory_dropTempClosureTable();
-        categoryClosureRepository.removeCategory_createTempClosureTable(categoryId); /* maybe need some lock or semaphore (if this was a multithreaded program) */
-        categoryClosureRepository.removeCategory_deleteFromCategoryClosure();
-        categoryClosureRepository.removeCategory_deleteFromCategoryProblems();
-        categoryClosureRepository.removeCategory_deleteFromCategories();
-        categoryClosureRepository.removeCategory_dropTempClosureTable();
+        /* 4. check if category id is root category */
+        checkCategoryRoot(categoryId, groupId);
+        /* 5. repository tasks */
+        /* get category id list */
+        List<CategoryClosureEntity> categoryClosureEntityList = categoryClosureRepository.findAllById_ParentId(categoryId);
+        List<Integer> categoryIdList = new ArrayList<>();
+        for(CategoryClosureEntity c : categoryClosureEntityList){
+            categoryIdList.add(c.getId().getChildId());
+        }
+
+        /* remove from category closure */
+        for(Integer i : categoryIdList) {
+            categoryClosureRepository.deleteAllByChild_CategoryId_OrParent_CategoryId(i, i);
+        }
+
+        /* get problem id list */
+        List<CategoryProblemEntity> categoryProblemEntityList = new ArrayList<>();
+        for(Integer i : categoryIdList) {
+            categoryProblemEntityList.addAll(categoryProblemRepository.findById_CategoryId(i));
+        }
+
+        List<Integer> problemIdList = new ArrayList<>();
+        boolean flag;
+        for(CategoryProblemEntity c : categoryProblemEntityList){
+            flag = true;
+            List<CategoryProblemEntity> tmpList = categoryProblemRepository.findAllById_ProblemId(c.getId().getProblemId());
+            for(CategoryProblemEntity e : tmpList){
+                /*
+                if problem is in a category which won't be deleted,
+                don't have to move to root. exclude it
+                 */
+                if(!categoryProblemEntityList.contains(e)){
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag) {
+                problemIdList.add(c.getId().getProblemId());
+            }
+        }
+
+        /* remove from category problem */
+        /* remove from categories */
+        for(Integer i : categoryIdList) {
+            categoryProblemRepository.deleteAllById_CategoryId(i);
+            categoryRepository.deleteAllByCategoryId(i);
+        }
+
+        /* add to category problem */
+        for(Integer i : problemIdList){
+            categoryProblemRepository.save(
+                    new CategoryProblemEntity(
+                            new CategoryProblemId(
+                                    groupRepository.findById(groupId).get().getRootCategoryId().getCategoryId(),
+                                    i
+                            ),
+                            groupRepository.findById(groupId).get().getRootCategoryId(),
+                            problemRepository.findById(i).get()
+
+                    )
+            );
+        }
 
         responseDto.setMessage("SUCCESS");
 
@@ -187,8 +240,6 @@ public class SoominServiceImpl implements SoominService{
             categoryIdList.add(c.getId().getChildId());
         }
 
-        System.out.println("categoryIdList = " + categoryIdList);
-
         /* find all problems of the categories */
         List<CategoryProblemEntity> categoryProblemEntityList = new ArrayList<>();
 
@@ -196,13 +247,16 @@ public class SoominServiceImpl implements SoominService{
             categoryProblemEntityList.addAll(categoryProblemRepository.findById_CategoryId(i));
         }
 
-        System.out.println("categoryProblemEntityList = " + categoryProblemEntityList);
-
-        List<ProblemEntity> problemEntityList = new ArrayList<>();
+        List<ProblemEntity> duplicateProblemEntityList = new ArrayList<>();
         for (CategoryProblemEntity c : categoryProblemEntityList) {
-            problemEntityList.add(c.getProblemEntity());
+            duplicateProblemEntityList.add(c.getProblemEntity());
         }
 
+        /* remove duplicates */
+        Set<ProblemEntity> problemEntitySet = new HashSet<>(duplicateProblemEntityList);
+        List<ProblemEntity> problemEntityList = new ArrayList<>(problemEntitySet);
+
+        /* for response */
         List<CategoryProblemDto> categoryProblemDtoList = new ArrayList<>();
 
         for (ProblemEntity e : problemEntityList) {
@@ -395,6 +449,15 @@ public class SoominServiceImpl implements SoominService{
                     /* already a member */
                 }
             }
+        }
+    }
+
+    /* throws exception if categoryId is rootCategoryId of groupId */
+    private void checkCategoryRoot(Integer categoryId, Integer groupId){
+        Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
+
+        if(groupEntity.get().getRootCategoryId().getCategoryId().equals(categoryId)){
+            /* TODO: exception handling */
         }
     }
 }
