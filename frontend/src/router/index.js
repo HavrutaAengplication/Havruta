@@ -8,6 +8,7 @@ import MyProblems from "@/components/MyProblems.vue"
 //import CreateGroup from "@/components/CategoryView.vue"
 import CategoryProblems from "@/components/CategoryProblems.vue"
 import GroupAdmin from "@/components/GroupAdmin.vue"
+import MemberManagement from "@/components/MemberManagement.vue";
 
 const routes = [
     { path: "/home", name: "Home", component: MainPage},
@@ -16,6 +17,7 @@ const routes = [
     { path: '/groups/:groupId', component: GroupPage },
     { path: '/groups/:groupId/categories/:categoryId', component: CategoryProblems},
     { path: '/groups/:groupId/admin', name: 'admin', component: GroupAdmin},
+    { path: '/groups/:groupId/members', component: MemberManagement},
     { path: "/problems", name: "MyProblem", component: MyProblems},
     { path: "/groups", name: "GroupPage", component: GroupPage},
     // { path: "/createproblem", component: CreateProblem },

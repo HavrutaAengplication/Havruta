@@ -1,6 +1,6 @@
 <template>
 <div>
-  <button>회원 관리</button>
+  <button><router-link :to="'/groups/' + this.groupId + '/members'">회원 관리</router-link></button>
 </div>
 
 <div>
@@ -8,7 +8,9 @@
 </div>
 
 <div>
-  <button>그룹 정보 수정</button>
+  <button @click="showPopup">그룹 정보 수정</button>
+  <modifyGroupInfo v-if="popupModifyGroupVisible" @close-popup="hidePopup" @send-group-name="modifyGroupInfo" />
+
 </div>
 
 <div>
@@ -23,8 +25,12 @@ import ModifyGroupInfo from '@/components/ModifyGroupInfo.vue'
 export default {
   name: "GroupAdmin",
   inheritAttrs: false,
+  components: {
+    ModifyGroupInfo
+  },
   data() {
     return {
+
       popupModifyGroupVisible: false,
 
     }
@@ -32,6 +38,9 @@ export default {
   computed: {
     token() {
       return this.$route.query.token
+    },
+    headers() {
+      return {Authorization: this.token}
     },
     isAdmin() {
       return this.$route.query.isAdmin
@@ -53,13 +62,30 @@ export default {
     // console.log('router: ' + this.$router)
   },
   methods: {
+    modifyGroupInfo(name) {
+      console.log("New Group Name: " + name);
+      axios.
+        put("http://localhost:8080/groups/" + this.groupId,
+          {
+            headers: this.headers,
+            body: {
+              newGroupName: name
+            }
+          })
+          .then(response => {
+            const data = response
+            console.log(data)
+          })
+          .catch(error => {
+            alert(error)
+          })
+
+    },
     removeGroup() {
       axios.
         delete("http://localhost:8080/groups/" + this.groupId,
           {
-            headers: {
-              token: ""
-            }
+            headers: this.headers
           })
           .then(response => {
             const data = response
@@ -74,9 +100,7 @@ export default {
         delete("http://localhost:8080/groups/" +
           this.groupId + "/categories/" + this.categoryId,
           {
-            headers: {
-              token: ""
-            }
+            headers: this.headers
           })
           .then(response => {
             const data = response
@@ -85,6 +109,20 @@ export default {
           .catch(error => {
             alert(error)
           })
+    },
+    showPopup() {
+      this.popupModifyGroupVisible = true;
+      this.freezeBody();
+    },
+    hidePopup() {
+      this.popupModifyGroupVisible = false;
+      this.unfreezeBody();
+    },
+    freezeBody() {
+      document.body.style.overflow = 'hidden';
+    },
+    unfreezeBody() {
+      document.body.style.overflow = 'auto';
     },
   }
 }
