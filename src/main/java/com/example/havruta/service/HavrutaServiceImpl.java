@@ -7,8 +7,7 @@ import com.example.havruta.data.entity.serializable.CategoryProblemId;
 import com.example.havruta.data.entity.serializable.ClosureId;
 import com.example.havruta.data.entity.serializable.MemberId;
 import com.example.havruta.data.repository.*;
-import com.example.havruta.errorAndException.ErrorCode;
-import com.example.havruta.errorAndException.NoGroupException;
+import com.example.havruta.errorAndException.*;
 import com.example.havruta.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -532,8 +531,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         }
 
         if (flag) {
-            /* TODO: exception handling */
-            responseDto.setMessage("Same category name already exists");
+            throw new SameCategoryNameException("Same category name already exists", ErrorCode.CATEGORY_NAME_ERROR);
         }
 
         /* 5. repository tasks */
@@ -614,15 +612,23 @@ public class HavrutaServiceImpl implements HavrutaService {
         }
 
         /* add to category problem */
-        for(Integer i : problemIdList){
+        for(Integer i : problemIdList) {
+            Optional<GroupEntity> optionalGroupEntity = groupRepository.findById(groupId);
+            Optional<ProblemEntity> optionalProblemEntity = problemRepository.findById(i);
+            if (optionalGroupEntity.isEmpty()) {
+                throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
+            }
+            if (optionalProblemEntity.isEmpty()) {
+                throw new NoProblemException("No Problem", ErrorCode.NO_PROBLEM_ERROR);
+            }
             categoryProblemRepository.save(
                     new CategoryProblemEntity(
                             new CategoryProblemId(
-                                    groupRepository.findById(groupId).get().getRootCategoryId().getCategoryId(),
+                                    optionalGroupEntity.get().getRootCategoryId().getCategoryId(),
                                     i
                             ),
-                            groupRepository.findById(groupId).get().getRootCategoryId(),
-                            problemRepository.findById(i).get()
+                            optionalGroupEntity.get().getRootCategoryId(),
+                            optionalProblemEntity.get()
 
                     )
             );
@@ -653,6 +659,9 @@ public class HavrutaServiceImpl implements HavrutaService {
         /* 4. repository tasks */
         /* Update category name */
         Optional<CategoryEntity> target = categoryRepository.findById(categoryId);
+        if(target.isEmpty()){
+            throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
+        }
         target.get().setCategoryName(categoryInfoDto.getCategoryName());
         categoryRepository.save(target.get());
         /* update categoryClosureRepository */
@@ -760,9 +769,13 @@ public class HavrutaServiceImpl implements HavrutaService {
         checkUserGroupMember(userId, groupId, false);
         /* 3. repository tasks */
 
-        GroupEntity groupEntity = groupRepository.findById(groupId).get();
+        Optional<GroupEntity> optionalGroupEntity = groupRepository.findById(groupId);
 
-        memberRepository.save(new MemberEntity(new MemberId(userId, groupId), userRepository.findById(userId).get(), groupEntity, 0, 0));
+        if(optionalGroupEntity.isEmpty()){
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
+        }
+
+        memberRepository.save(new MemberEntity(new MemberId(userId, groupId), userRepository.findById(userId).get(), optionalGroupEntity.get(), 0, 0));
 
         return responseDto;
     }
@@ -820,9 +833,13 @@ public class HavrutaServiceImpl implements HavrutaService {
         /* 4-1. problem repo */
         ProblemEntity problemEntity = new ProblemEntity();
 
-        UserEntity userEntity = userRepository.findById(userId).get();
+        Optional<UserEntity> optionalUserEntity = userRepository.findById(userId);
 
-        problemEntity.setUserId(userEntity);
+        if(optionalUserEntity.isEmpty()){
+            throw new NoUserException("No User", ErrorCode.NO_USER_ERROR);
+        }
+
+        problemEntity.setUserId(optionalUserEntity.get());
         problemEntity.setProblemType(problemRequestDto.getProblemType());
         problemEntity.setProblemQuestion(problemRequestDto.getProblemQuestion());
         problemEntity.setProblemAnswer(problemRequestDto.getProblemAnswer());
@@ -847,6 +864,11 @@ public class HavrutaServiceImpl implements HavrutaService {
         for(CategoryIdRequestDto c : problemRequestDto.getCategoryIdList()){
             CategoryProblemEntity categoryProblemEntity = new CategoryProblemEntity();
 
+            /* TODO: if error here, several ways to handle it.
+                1: undo the tasks done above, which means that none of the categories added
+                2: set a flag that error occured, and go on. After loop ended, throw an exception (would be better if we can send the failed categories to client)
+                3: throw exception right away. (not a good way)
+             */
             CategoryEntity categoryEntity = categoryRepository.findById(c.getCategoryId()).get();
 
             categoryProblemRepository.save(new CategoryProblemEntity(new CategoryProblemId(), categoryEntity, problemEntityResult));
@@ -862,7 +884,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
 
         if (groupEntity.isEmpty()) {
-            /* TODO: exception handling */
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
     }
 
@@ -873,10 +895,13 @@ public class HavrutaServiceImpl implements HavrutaService {
         Optional<MemberEntity> memberEntity = memberRepository.findById(new MemberId(userId, groupId));
 
         if(memberEntity.isEmpty()){
-            /* TODO: exception handling */
+            throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
+        }
+        else if(memberEntity.get().getIsMember().equals(0)){
+            throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
         }
         else if(memberEntity.get().getIsAdmin().equals(0)){
-            /* TODO: exception handling */
+            throw new NotAdminException("Not Admin", ErrorCode.NOT_ADMIN_ERROR);
         }
     }
 
@@ -898,7 +923,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         }
 
         if (!found) {
-            /* TODO: exception handling */
+            throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
         }
     }
 
@@ -910,16 +935,16 @@ public class HavrutaServiceImpl implements HavrutaService {
 
         if(flag) {
             if (memberEntity.isEmpty()) {
-                /* TODO: exception handling */
+                throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
             } else if (memberEntity.get().getIsMember().equals(0)) {
-                /* TODO: exception handling */
+                throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
             }
         }
         else{
             if (memberEntity.isPresent()) {
                 if (memberEntity.get().getIsMember().equals(1)) {
-                    /* TODO: exception handling */
                     /* already a member */
+                    throw new AlreadyMemberException("Already Member", ErrorCode.ALREADY_MEMBER_ERROR);
                 }
             }
         }
@@ -930,7 +955,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
 
         if(groupEntity.get().getRootCategoryId().getCategoryId().equals(categoryId)){
-            /* TODO: exception handling */
+            throw new RootCategoryException("Root Category", ErrorCode.ROOT_CATEGORY_ERROR);
         }
     }
 }
