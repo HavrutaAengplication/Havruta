@@ -8,6 +8,7 @@ import com.example.havruta.data.entity.serializable.MemberId;
 import com.example.havruta.data.repository.*;
 import com.example.havruta.errorAndException.ErrorCode;
 import com.example.havruta.errorAndException.NoGroupException;
+import com.example.havruta.errorAndException.NotMemberException;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -208,17 +209,11 @@ public class HavrutaDaoImpl implements HavrutaDao {
 
         while(!stack.empty()){
             CategoryClosureEntity c = stack.pop();
-            System.out.println("stack.pop()");
-            System.out.println(c);
             List<CategoryClosureEntity> categoryClosureEntityList = categoryClosureRepository.findById_ParentIdAndDepth(c.getChild().getCategoryId(), 1);
-            System.out.println("findById_ParentIdAndDepth");
-            System.out.println(categoryClosureEntityList);
             List<CategoryClosureEntity> categoryClosureEntityListOrderByDepth = categoryClosureRepository.findAllById_ChildIdOrderByDepthDesc(c.getChild().getCategoryId());
             allCategoryClosureEntityList.add(categoryClosureEntityListOrderByDepth.get(0));
             for(int i = categoryClosureEntityList.size() - 1; i >= 0; i--){
                 stack.push(categoryClosureEntityList.get(i));
-                System.out.println("push");
-                System.out.println(categoryClosureEntityList.get(i));
             }
         }
 
@@ -237,16 +232,13 @@ public class HavrutaDaoImpl implements HavrutaDao {
         Optional<MemberEntity> optionalMemberEntity = memberRepository.findById(new MemberId(newAdminId, groupId));
         MemberEntity memberEntity = new MemberEntity();
         if(optionalMemberEntity.isPresent()){
-            System.out.println(optionalMemberEntity);
             memberEntity = optionalMemberEntity.get();
             memberEntity.setIsAdmin(1);
             memberRepository.save(memberEntity);
             return true;
         }
         else{
-            System.out.println(newAdminId);
-            System.out.println(groupId);
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NotMemberException("No Such Member", ErrorCode.NOT_MEMBER_ERROR);
         }
     }
     @Override
@@ -259,16 +251,13 @@ public class HavrutaDaoImpl implements HavrutaDao {
         Optional<MemberEntity> optionalMemberEntity = memberRepository.findById(new MemberId(userId, groupId));
         MemberEntity memberEntity = new MemberEntity();
         if(optionalMemberEntity.isPresent()){
-            System.out.println(optionalMemberEntity);
             memberEntity = optionalMemberEntity.get();
             memberEntity.setIsMember(1);
             memberRepository.save(memberEntity);
             return true;
         }
         else{
-            System.out.println(userId);
-            System.out.println(groupId);
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NotMemberException("No Such Member", ErrorCode.NOT_MEMBER_ERROR);
         }
     }
     @Override
@@ -280,7 +269,7 @@ public class HavrutaDaoImpl implements HavrutaDao {
             groupEntity = optionalGroupEntity.get();
         }
         else{
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
         memberRepository.deleteById_groupId(groupId);
         //rootid로 클로저 다 찾아서 리스트에 넣으면서 삭제
@@ -289,18 +278,15 @@ public class HavrutaDaoImpl implements HavrutaDao {
         for(CategoryClosureEntity c : allCategoryClosureEntityList){
             categoryClosureRepository.deleteAllById_ChildId(c.getChild().getCategoryId());
         }
-
-        //리스트 돌면서 관련된 카테고리 프라블럼 삭제
+       //리스트 돌면서 관련된 카테고리 프라블럼 삭제
         for(CategoryClosureEntity c : allCategoryClosureEntityList){
             categoryProblemRepository.deleteAllById_CategoryId(c.getChild().getCategoryId());
         }
-
         groupRepository.deleteById(groupId);
         //리스트 돌면서 관련된 카테고리 삭제
         for(CategoryClosureEntity c : allCategoryClosureEntityList){
             categoryRepository.deleteById(c.getChild().getCategoryId());
         }
-
         return true;
     }
     @Override
@@ -308,15 +294,13 @@ public class HavrutaDaoImpl implements HavrutaDao {
         Optional<GroupEntity> optionalGroupEntity = groupRepository.findById(groupId);
         GroupEntity groupEntity = new GroupEntity();
         if(optionalGroupEntity.isPresent()){
-            System.out.println(optionalGroupEntity);
             groupEntity = optionalGroupEntity.get();
             groupEntity.setGroupName(newGroupName);
             groupRepository.save((groupEntity));
             return true;
         }
         else{
-            System.out.println(groupId);
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
     }
 }

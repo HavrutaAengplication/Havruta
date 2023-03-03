@@ -9,6 +9,7 @@ import com.example.havruta.data.entity.serializable.MemberId;
 import com.example.havruta.data.repository.*;
 import com.example.havruta.errorAndException.*;
 import com.example.havruta.security.JwtUtil;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -256,13 +257,8 @@ public class HavrutaServiceImpl implements HavrutaService {
     }
 
     public SpecificGroupResponseDto specificGroupPage(String token, Integer groupId){
-        //사용자 정보 확인 (우리가 발행한 토큰 넘어올 것) 및 isAdmin, isMember 받아오기 -> member entity 생성 필요?
-        //groupId로 groupName, root_category_Id 찾기
-        //root_category_ID로 자식 카테고리 Id, name, depth 다 받아오기 -> 쿼리 짜야 됨
-        //root_category_ID가 parent_ID인 모든 category_closure 받아옴. 받아온 child_id로 같은 일 반복해서 한 리스트에 모아줌
-
         Integer userID = jwtUtil.extractUserId(token);
-
+        //checkUserIdValid?
         SpecificGroupResponseDto dto = new SpecificGroupResponseDto();
 
         GroupEntity groupEntity = new GroupEntity();
@@ -271,31 +267,32 @@ public class HavrutaServiceImpl implements HavrutaService {
         if(groupSearchResult.isPresent()) {//그룹 검색 결과 확인
             groupEntity = groupSearchResult.get();
         }else {
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
 
         MemberEntity memberEntity = new MemberEntity();
         Optional<MemberEntity> memberSearchResult = havrutaDao.findMemberById(userID, groupEntity.getGroupId());
-
         if(memberSearchResult.isPresent()) {//멤버 검색 결과 확인
             memberEntity = memberSearchResult.get();
+            dto.setIsAdmin(memberEntity.getIsAdmin());
+            dto.setIsMember(memberEntity.getIsMember());
         }else {
-            System.out.println("member Serach Result Error\n");
-            System.out.println(memberSearchResult);
-            System.out.println(userID);
-            System.out.println(groupEntity.getGroupId());
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            dto.setIsAdmin(0);
+            dto.setIsMember(0);
         }
 
         List<CategoryClosureEntity> categoryClosureEntityList = havrutaDao.findClosuresByRootId(groupEntity.getRootCategoryId().getCategoryId());
+        if(categoryClosureEntityList.isEmpty()) {
+            throw new NoCategoryException("No Category Closure", ErrorCode.NO_CATEGORY_ERROR);
+        }
         List<CategoryDto> categoryDtoList = new ArrayList<CategoryDto>();
         for(CategoryClosureEntity categoryClosureEntity : categoryClosureEntityList){
             CategoryEntity categoryEntity = new CategoryEntity();
             Optional<CategoryEntity> categorySerachResult = havrutaDao.findCategoryById(categoryClosureEntity.getChild().getCategoryId());
-            if(categorySerachResult.isPresent()) {//멤버 검색 결과 확인
+            if(categorySerachResult.isPresent()) {
                 categoryEntity = categorySerachResult.get();
             }else {
-                throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+                throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
             }
             CategoryDto categoryDto = new CategoryDto();
             categoryDto.setCategoryId(categoryEntity.getCategoryId());
@@ -306,31 +303,29 @@ public class HavrutaServiceImpl implements HavrutaService {
 
         dto.setGroupName(groupEntity.getGroupName());
         dto.setCategoryList(categoryDtoList);
-        dto.setIsAdmin(memberEntity.getIsAdmin());
-        dto.setIsMember(memberEntity.getIsMember());
+
         return dto;
     }
 
     public AdminResponseDto admin(String token, Integer groupId) {
-        //사용자 정보 확인
-        //groupId로 groupName, root_category_Id 찾기
-        //root_category_ID로 자식 카테고리 Id, name 다 받아오기 -> 쿼리짜기
-        //root_category_ID가 parent_ID인 모든 category_closure 받아옴. 받아온 child_id로 같은 일 반복해서 한 리스트에 모아줌
-
         Integer userID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userID, groupId);
 
         AdminResponseDto dto = new AdminResponseDto();
 
         GroupEntity groupEntity = new GroupEntity();
         Optional<GroupEntity> groupSearchResult = havrutaDao.findGroupById(groupId);
 
-        if(groupSearchResult.isPresent()) {
+        if(groupSearchResult.isPresent()) {//그룹 검색 결과 확인
             groupEntity = groupSearchResult.get();
         }else {
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
 
         List<CategoryClosureEntity> categoryClosureEntityList = havrutaDao.findClosuresByRootId(groupEntity.getRootCategoryId().getCategoryId());
+        if(categoryClosureEntityList.isEmpty()) {
+            throw new NoCategoryException("No Category Closure", ErrorCode.NO_CATEGORY_ERROR);
+        }
         List<CategoryIdDto> categoryIdDtoList = new ArrayList<CategoryIdDto>();
         for(CategoryClosureEntity categoryClosureEntity : categoryClosureEntityList){
             CategoryEntity categoryEntity = new CategoryEntity();
@@ -338,7 +333,7 @@ public class HavrutaServiceImpl implements HavrutaService {
             if(categorySerachResult.isPresent()) {//멤버 검색 결과 확인
                 categoryEntity = categorySerachResult.get();
             }else {
-                throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+                throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
             }
             CategoryIdDto categoryIdDto = new CategoryIdDto();
             categoryIdDto.setCategoryId(categoryEntity.getCategoryId());
@@ -353,25 +348,29 @@ public class HavrutaServiceImpl implements HavrutaService {
     }
 
     public AdminMembersResponseDto adminMembers(String token, Integer groupId) {
-        //사용자 정보 확인 및 isAdmin
-        //groupId로 member_Table에서 user_ID 찾고 is_Member에 따라 다른 리스트에 넣기
         Integer userID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userID, groupId);
 
         AdminMembersResponseDto dto = new AdminMembersResponseDto();
 
         GroupEntity groupEntity = new GroupEntity();
         Optional<GroupEntity> searchResult = havrutaDao.findGroupById(groupId);
 
-        if(searchResult.isPresent()) {
+        if(searchResult.isPresent()) {//그룹 검색 결과 확인
             groupEntity = searchResult.get();
         }else {
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
-
-        List<MemberEntity> memberEntityList = havrutaDao.findMembersByGroupId(groupId);
 
         List<MemberDto> MemberDtoList = new ArrayList<MemberDto>();
         List<UserDto> UserDtoList = new ArrayList<UserDto>();
+        List<MemberEntity> memberEntityList = havrutaDao.findMembersByGroupId(groupId);
+        if(memberEntityList.isEmpty()){
+            dto.setMemberList(MemberDtoList);
+            dto.setJoinList(UserDtoList);
+
+            return dto;
+        }
 
         for(MemberEntity memberEntity : memberEntityList){
             Optional<UserEntity> optionalUserEntity = havrutaDao.findUserById(memberEntity.getUserEntity().getUserId());
@@ -392,6 +391,9 @@ public class HavrutaServiceImpl implements HavrutaService {
                     UserDtoList.add(userDto);
                 }
             }
+            else{
+                throw new NoUserException("No Such Memeber in User", ErrorCode.NO_USER_ERROR);
+            }
         }
 
         dto.setMemberList(MemberDtoList);
@@ -404,6 +406,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //사용자 정보 확인
         //groupId와 newAdminId로 members에서 튜플 찾아서 isAdmin 바꿔주기
         Integer userID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userID, groupId);
 
         Boolean result = havrutaDao.designateAdmin(newAdminId, groupId);
 
@@ -422,6 +425,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //사용자 정보 확인
         //groupId와 userId로 members에서 튜플 찾아서 제거
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.dropMember(userId, groupId);
 
@@ -441,6 +445,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //groupId와 userId로 members에서 튜플 찾아서 isMember 바꿔주기
 
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.confirm(userId, groupId);
 
@@ -460,6 +465,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //groupId로 그룹 찾아서 삭제
 
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.deleteGroup(groupId);
 
@@ -479,6 +485,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //groupId로 그룹 찾아서 새이름을 변경
 
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.updateGroup(newGroupName, groupId);
 
