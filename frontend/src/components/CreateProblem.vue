@@ -25,13 +25,19 @@
         <label for="question-content">문제 내용 : </label><br>
         <textarea id="question-content" v-model="questionContent"></textarea>
       </div>
+      <div>
+        <ul class="footer-button-plus">
+          <input @change="upload" type="file" id="file" accept="image/*" class="inputFile" />
+          <label for="file" class="input-plus">+</label>
+        </ul>
+      </div>
       <div v-if="selectedQuestionType === 'multiple-choice'">
         <div v-for="(choice, index) in choices" :key="index">
-          <input type="checkbox" @click="addAnswer(choice)"> <label>{{ index  }} : {{ choice }}</label>
+          <input type="radio" :id="choice.index" :value="choice" v-model="checkedChoices"> <label>{{ index+1  }} : {{ choice }}</label>
         </div>
         <input v-if="openNewChoice == true" v-model="newChoiceContent" @keyup.enter="addChoice()">
         <button v-if="openNewChoice == false" @click="openNewChoice = true">Add Choice</button>
-        <div> {{ checkedChoices }}</div>
+        <div> 선택된 정답 : {{ checkedChoices }}</div>
       </div>
       <div v-if="selectedQuestionType === 'short-answer'">
         <div>
@@ -69,6 +75,11 @@ export default {
     };
   },
   methods: {
+    upload(e){
+      let ImageFile = e.target.files
+      let url=URL.createObjectURL(ImageFile[0])
+      this.images.push(url)
+    },
     assignCategory() {
       this.selectedCategories.push(this.selectedCategory)
     },
@@ -76,9 +87,6 @@ export default {
       this.choices.push(this.newChoiceContent)
       this.newChoiceContent = ""
       this.openNewChoice = false
-    },
-    addAnswer(choice) {
-      this.checkedChoices.push(choice)
     },
     submitQuestion() {
       const question = {
@@ -88,15 +96,22 @@ export default {
         content: this.questionContent,
       };
       if (this.selectedQuestionType === "multiple-choice") {
-        question.choices = this.choices;
+        question.choice = this.choices;
       } else {
         question.shortAnswer = this.shortAnswer;
       }
       this.$emit('close-modal');
       console.log(question);
 
+      if (this.selectedQuestionType == "multiple-choices"){
+        this.answer = this.checkedChoices
+      }
+      else {
+        this.answer = this.shortAnswer
+      }
+
       axios.
-      post('http://localhost:8080/groups/' + this.groupId + '/problems', {
+      post(`${BASE_URL}/groups/${this.groupId}/problems`, {
         headers : this.headers,
         body : {
           categoryList : this.categories,
