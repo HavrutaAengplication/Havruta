@@ -5,7 +5,7 @@ import Login from "@/components/KaKaoLogin.vue"
 import GroupPage from "@/components/GroupPage.vue";
 import MyProblems from "@/components/MyProblems.vue"
 import CreateProblem from "@/components/CreateProblem.vue";
-//import CreateGroup from "@/components/CategoryView.vue"
+import CategoryView from "@/components/CategoryView.vue"
 import CategoryProblems from "@/components/CategoryProblems.vue"
 import GroupAdmin from "@/components/GroupAdmin.vue"
 import MemberManagement from "@/components/MemberManagement.vue";
@@ -22,6 +22,7 @@ const routes = [
     { path: "/groups", name: "GroupPage", component: GroupPage},
     { path: "/groups/:groupId/problems", component: CreateProblem },
     { path: "/categoryproblems", component: CategoryProblems},
+    { path: "/groups/:groupId/categories", component: CategoryView},
 ]
 
 const router = createRouter({
