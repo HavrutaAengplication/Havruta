@@ -66,7 +66,6 @@ export default {
       this.localModel = Object.assign({}, this.model)
     },
     DeleteCate(m) {
-      this.thisModel.splice(m.categoryId - 1, 1)
       axios
           .delete(`${BASE_URL}/groups/${this.groupId}/categories/${m.categoryId}`,
               {

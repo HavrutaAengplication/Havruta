@@ -5,6 +5,7 @@ import Login from "@/components/KaKaoLogin.vue"
 import GroupPage from "@/components/GroupPage.vue";
 import MyProblems from "@/components/MyProblems.vue"
 import CreateProblem from "@/components/CreateProblem.vue";
+import ModifyProblem from "@/components/ModifyProblem.vue";
 import CategoryView from "@/components/CategoryView.vue"
 import CategoryProblems from "@/components/CategoryProblems.vue"
 import GroupAdmin from "@/components/GroupAdmin.vue"
@@ -21,6 +22,7 @@ const routes = [
     { path: "/problems", name: "MyProblem", component: MyProblems},
     { path: "/groups", name: "GroupPage", component: GroupPage},
     { path: "/groups/:groupId/problems", component: CreateProblem },
+    { path: "/mypage/problems/:problemId", component: ModifyProblem },
     { path: "/categoryproblems", component: CategoryProblems},
     { path: "/groups/:groupId/categories", component: CategoryView},
 ]
