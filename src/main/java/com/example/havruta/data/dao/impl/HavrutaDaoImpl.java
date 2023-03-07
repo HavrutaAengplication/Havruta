@@ -6,6 +6,7 @@ import com.example.havruta.data.entity.serializable.CategoryProblemId;
 import com.example.havruta.data.entity.serializable.ClosureId;
 import com.example.havruta.data.entity.serializable.MemberId;
 import com.example.havruta.data.repository.*;
+import com.example.havruta.errorAndException.AlreadyUserException;
 import com.example.havruta.errorAndException.ErrorCode;
 import com.example.havruta.errorAndException.NoGroupException;
 import com.example.havruta.errorAndException.NotMemberException;
@@ -44,7 +45,8 @@ public class HavrutaDaoImpl implements HavrutaDao {
             userRepository.save(newUserEntity);
             return Optional.of(newUserEntity);
         }
-        return Optional.ofNullable(null);
+        else throw new AlreadyUserException("Already signed in", ErrorCode.ALREADY_USER_ERROR);
+
     }
 
     @Override

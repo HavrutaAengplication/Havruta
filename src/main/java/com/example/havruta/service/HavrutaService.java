@@ -8,7 +8,7 @@ public interface HavrutaService {
 
     public ResponseDto signUp(SignInRequestDto reqbody);
     public GroupListResponseDto mainPage();
-    public UserNameDto login(LoginRequestDto req);
+    public UserDto login(LoginRequestDto req);
     public ResponseDto newGroup(String token, NewGroupRequestDto reqbody);
     public MyPageResponseDto myPage(String token);
 

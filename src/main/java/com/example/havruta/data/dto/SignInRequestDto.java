@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignInRequestDto {
-    public String googleToken;
+    public String email;
     public String userName;
 }
