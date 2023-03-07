@@ -1,4 +1,7 @@
 <script>
+import axios from 'axios'
+import {BASE_URL, HEADERS} from "@/config";
+
 export default {
   name: 'CategoryView', // necessary for self-reference
   props: {
@@ -9,56 +12,90 @@ export default {
       isOpen: false,
       localModel: null,
       newCateName: '',
-      openNewCategory: false,
+      newCateId : 0,
+      curRenameOpen: -1,
+      curNewCateOpen: -1,
     }
   },
   computed: {
     thisModel() {
-      return this.localModel;
+      return this.localModel
     }
   },
   created() {
-    // create a copy of the prop when the component is created
     this.localModel = Object.assign({}, this.model)
   },
   methods: {
-    toggle() {
-        this.isOpen = !this.isOpen
+    createCate(m) {
+      axios
+          .post(`${BASE_URL}/groups/${this.groupId}/categories`,
+              {
+            parentCategoryId: m.categoryId,
+            categoryName: this.newCateName
+              },
+              {
+                headers: HEADERS
+              }
+          )
+          .then(response => {
+            console.log(response)
+          })
+      this.curNewCateOpen = -1
+      this.$emit('get-group-data');
+      this.localModel = Object.assign({}, this.model)
     },
-    changeName() {
-      this.localModel.name = this.newCateName
+    RenameCate(m) {
+      this.curRenameOpen = -1
+      axios
+          .put(`${BASE_URL}/groups/${this.groupId}/categories`,
+              {
+                parentCategoryId: m.categoryId,
+                categoryName: this.newCateName
+              },
+              {
+                headers: HEADERS
+              }
+          )
+          .then(response => {
+            console.log(response)
+          })
+          .catch(error => {
+            alert(error)
+          })
+      this.$emit('get-group-data');
+      this.localModel = Object.assign({}, this.model)
     },
-    createCategory() {
-      this.localModel.children.push({
-        name: '새 카테고리'
-      })
-      // axios로 카테고리 생성 request 해주는 구문 넣어야 함!
-
-      this.openNewCategory = false
+    DeleteCate(m) {
+      axios
+          .delete(`${BASE_URL}/groups/${this.groupId}/categories/${m.categoryId}`,
+              {
+                headers: HEADERS
+              })
+          .then(response => {
+            console.log(response)
+          })
+          .catch(error => {
+            alert(error)
+          })
+      this.$emit('get-group-data');
+      this.localModel = Object.assign({}, this.model)
     },
-    openCreateCategory(){
-      this.openNewCategory = true
-    }
   }
 }
 </script>
 
 <template>
   <li>
-    <div class="bold" @click="toggle" @dblclick="changeName">
-      {{ model.name }}
-      <span>[{{ isOpen ? '-' : '+' }}]</span>
+    <div v-for="m in model" :key="m.categoryId">
+      <span v-if="curRenameOpen != m.categoryId">
+        {{ m.categoryName }} <t></t>
+      </span>
+      <input v-if="curRenameOpen == m.categoryId" @keyup.enter="RenameCate(m)">
+      <button v-if="curNewCateOpen != m.categoryId" @click="curNewCateOpen = m.categoryId"> ADD SUBCATEGORY </button>
+      <button v-if="curRenameOpen != m.categoryId" @click="curRenameOpen = m.categoryId" placeholder="m.categoryId"> RENAME </button>
+      <button @click="DeleteCate(m)"> DELETE </button><br>
+      <input v-if="curNewCateOpen == m.categoryId" v-model="newCateName" @keyup.enter="createCate(m)" placeholder="NEW CATEGORY NAME">
     </div>
-    <ul v-show="isOpen">
-      <CategoryView class="item" v-for="model in model.children" :key="model.name" :model="model">
-      </CategoryView>
-      <div v-if="openCreateCategory()">
-        <input v-model="newCateName" @keyup.enter="createCategory()" placeholder="새 카테고리 이름">
-      </div>
-      <div v-else>
-        <button class="add" @click="openCreateCategory()">Add New Category</button>
-      </div>
-    </ul>
   </li>
 </template>
 

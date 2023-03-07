@@ -18,6 +18,7 @@ public interface CategoryClosureRepository extends JpaRepository<CategoryClosure
     public List<CategoryClosureEntity> findById_ParentIdAndDepth(Integer parentId, Integer depth);
     public Optional<CategoryClosureEntity> findById_ChildIdAndDepth(Integer childId, Integer depth);
     public List<CategoryClosureEntity> findAllById_ChildIdOrderByDepthDesc(Integer childId);
+    @Transactional
     public void deleteAllById_ChildId(Integer childId);
     /*
         Insert rows for a new category

@@ -4,8 +4,9 @@ import MyPage from "@/components/MyPage.vue";
 import Login from "@/components/KaKaoLogin.vue"
 import GroupPage from "@/components/GroupPage.vue";
 import MyProblems from "@/components/MyProblems.vue"
-// import CreateProblem from "@/components/CreateProblem.vue";
-//import CreateGroup from "@/components/CategoryView.vue"
+import CreateProblem from "@/components/CreateProblem.vue";
+import ModifyProblem from "@/components/ModifyProblem.vue";
+import CategoryView from "@/components/CategoryView.vue"
 import CategoryProblems from "@/components/CategoryProblems.vue"
 import GroupAdmin from "@/components/GroupAdmin.vue"
 import MemberManagement from "@/components/MemberManagement.vue";
@@ -18,10 +19,12 @@ const routes = [
     { path: '/groups/:groupId/categories/:categoryId', component: CategoryProblems},
     { path: '/groups/:groupId/admin', name: 'admin', component: GroupAdmin},
     { path: '/groups/:groupId/members', component: MemberManagement},
-    { path: "/problems", name: "MyProblem", component: MyProblems},
+    { path: "/mypage/problems", name: "MyProblem", component: MyProblems},
     { path: "/groups", name: "GroupPage", component: GroupPage},
-    // { path: "/createproblem", component: CreateProblem },
+    { path: "/groups/:groupId/problems", component: CreateProblem },
+    { path: "/mypage/problems/:problemId", component: ModifyProblem },
     { path: "/categoryproblems", component: CategoryProblems},
+    { path: "/groups/:groupId/categories", component: CategoryView},
 ]
 
 const router = createRouter({

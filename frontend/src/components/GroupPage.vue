@@ -15,12 +15,7 @@
     </div>
     <div class="box">
       <h2>Categories</h2>
-      <ul>
-        <li v-for="category in categories" :key="category.categoryId">
-          <router-link :to="'/groups/' + this.group.id + '/categories/' + category.categoryId">
-            {{category.categoryName}}</router-link>
-        </li>
-      </ul>
+      <CategoryView :model="this.categories" @get-group-data="getGroupData"></CategoryView>
     </div>
   </div>
 </template>
@@ -28,8 +23,12 @@
 <script>
 import axios from 'axios'
 import {BASE_URL, HEADERS} from "@/config";
+import CategoryView from "@/components/CategoryView.vue";
 export default {
   name: "GroupPage",
+  components : {
+    CategoryView,
+  },
   data() {
     return {
       categories: [
@@ -67,10 +66,10 @@ export default {
           })
           .then(response => {
             console.log(response)
-            this.groupName = response.groupName
-            this.categories = response.categoryList
-            this.isAdmin = response.isAdmin
-            this.isMember = response.isMember
+            this.groupName = response.data.groupName
+            this.categories = response.data.categoryList
+            this.isAdmin = response.data.isAdmin
+            this.isMember = response.data.isMember
           })
           .catch(error => console.log(error))
     },

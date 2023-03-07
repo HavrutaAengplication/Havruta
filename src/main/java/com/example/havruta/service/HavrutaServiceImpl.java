@@ -7,9 +7,9 @@ import com.example.havruta.data.entity.serializable.CategoryProblemId;
 import com.example.havruta.data.entity.serializable.ClosureId;
 import com.example.havruta.data.entity.serializable.MemberId;
 import com.example.havruta.data.repository.*;
-import com.example.havruta.errorAndException.ErrorCode;
-import com.example.havruta.errorAndException.NoGroupException;
+import com.example.havruta.errorAndException.*;
 import com.example.havruta.security.JwtUtil;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -178,27 +178,37 @@ public class HavrutaServiceImpl implements HavrutaService {
 
             myProblemDto.setProblemQuestion(problemEntity.getProblemQuestion());
 
+//            List<ItemDto> itemDtoList = new ArrayList<>();
+//            Map<Integer, String> map = problemEntity.getProblemCandidate();
+//            if(map != null) {
+//                map.forEach((key, value) -> {
+//                    ItemDto itemDto = new ItemDto();
+//                    itemDto.setItem(value);
+//                    itemDtoList.add(itemDto);
+//                });
+//            }
             List<ItemDto> itemDtoList = new ArrayList<>();
-            Map<Integer, String> map = problemEntity.getProblemCandidate();
-            if(map != null) {
-                map.forEach((key, value) -> {
-                    ItemDto itemDto = new ItemDto();
-                    itemDto.setItem(value);
-                    itemDtoList.add(itemDto);
-                });
+            for(Map.Entry<Integer, String> mapEntry : problemEntity.getProblemCandidate().entrySet()){
+                itemDtoList.add(new ItemDto(mapEntry.getValue()));
             }
+
+
             myProblemDto.setProblemCandidate(itemDtoList);
 
             myProblemDto.setProblemAnswer(problemEntity.getProblemAnswer());
 
+//            List<ImageDto> imageDtoList = new ArrayList<>();
+//            map = problemEntity.getProblemCandidate();
+//            if(map != null) {
+//                map.forEach((key, value) -> {
+//                    ImageDto imageDto = new ImageDto();
+//                    imageDto.setImage(value);
+//                    imageDtoList.add(imageDto);
+//                });
+//            }
             List<ImageDto> imageDtoList = new ArrayList<>();
-            map = problemEntity.getProblemCandidate();
-            if(map != null) {
-                map.forEach((key, value) -> {
-                    ImageDto imageDto = new ImageDto();
-                    imageDto.setImage(value);
-                    imageDtoList.add(imageDto);
-                });
+            for(Map.Entry<Integer, String> mapEntry : problemEntity.getProblemImage().entrySet()){
+                imageDtoList.add(new ImageDto(mapEntry.getValue()));
             }
             myProblemDto.setProblemImage(imageDtoList);
 
@@ -228,9 +238,19 @@ public class HavrutaServiceImpl implements HavrutaService {
 
             problemEntity.get().setProblemType(problemDto.getProblemType());
             problemEntity.get().setProblemQuestion(problemDto.getProblemQuestion());
-            //problemEntity.get().setProblemCandidate(problemDto.getProblemCandidate());
+            Map<Integer, String> candidateMap = new HashMap<>();
+            int cnt = 0;
+            for(ItemDto itemDto : problemDto.getProblemCandidate()){
+                candidateMap.put(cnt++, itemDto.getItem());
+            }
+            problemEntity.get().setProblemCandidate(candidateMap);
             problemEntity.get().setProblemAnswer(problemDto.getProblemAnswer());
-            //problemEntity.get().setProblemImage(problemDto.getProblemImage());
+            Map<Integer, String> imageMap = new HashMap<>();
+            cnt = 0;
+            for(ImageDto imageDto : problemDto.getProblemImage()){
+                imageMap.put(cnt++, imageDto.getImage());
+            }
+            problemEntity.get().setProblemImage(imageMap);
             havrutaDao.changeProblem(problemEntity.get());
             dto.setMessage("success");
         }
@@ -257,13 +277,8 @@ public class HavrutaServiceImpl implements HavrutaService {
     }
 
     public SpecificGroupResponseDto specificGroupPage(String token, Integer groupId){
-        //사용자 정보 확인 (우리가 발행한 토큰 넘어올 것) 및 isAdmin, isMember 받아오기 -> member entity 생성 필요?
-        //groupId로 groupName, root_category_Id 찾기
-        //root_category_ID로 자식 카테고리 Id, name, depth 다 받아오기 -> 쿼리 짜야 됨
-        //root_category_ID가 parent_ID인 모든 category_closure 받아옴. 받아온 child_id로 같은 일 반복해서 한 리스트에 모아줌
-
         Integer userID = jwtUtil.extractUserId(token);
-
+        //checkUserIdValid?
         SpecificGroupResponseDto dto = new SpecificGroupResponseDto();
 
         GroupEntity groupEntity = new GroupEntity();
@@ -272,31 +287,32 @@ public class HavrutaServiceImpl implements HavrutaService {
         if(groupSearchResult.isPresent()) {//그룹 검색 결과 확인
             groupEntity = groupSearchResult.get();
         }else {
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
 
         MemberEntity memberEntity = new MemberEntity();
         Optional<MemberEntity> memberSearchResult = havrutaDao.findMemberById(userID, groupEntity.getGroupId());
-
         if(memberSearchResult.isPresent()) {//멤버 검색 결과 확인
             memberEntity = memberSearchResult.get();
+            dto.setIsAdmin(memberEntity.getIsAdmin());
+            dto.setIsMember(memberEntity.getIsMember());
         }else {
-            System.out.println("member Serach Result Error\n");
-            System.out.println(memberSearchResult);
-            System.out.println(userID);
-            System.out.println(groupEntity.getGroupId());
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            dto.setIsAdmin(0);
+            dto.setIsMember(0);
         }
 
         List<CategoryClosureEntity> categoryClosureEntityList = havrutaDao.findClosuresByRootId(groupEntity.getRootCategoryId().getCategoryId());
+        if(categoryClosureEntityList.isEmpty()) {
+            throw new NoCategoryException("No Category Closure", ErrorCode.NO_CATEGORY_ERROR);
+        }
         List<CategoryDto> categoryDtoList = new ArrayList<CategoryDto>();
         for(CategoryClosureEntity categoryClosureEntity : categoryClosureEntityList){
             CategoryEntity categoryEntity = new CategoryEntity();
             Optional<CategoryEntity> categorySerachResult = havrutaDao.findCategoryById(categoryClosureEntity.getChild().getCategoryId());
-            if(categorySerachResult.isPresent()) {//멤버 검색 결과 확인
+            if(categorySerachResult.isPresent()) {
                 categoryEntity = categorySerachResult.get();
             }else {
-                throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+                throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
             }
             CategoryDto categoryDto = new CategoryDto();
             categoryDto.setCategoryId(categoryEntity.getCategoryId());
@@ -307,31 +323,29 @@ public class HavrutaServiceImpl implements HavrutaService {
 
         dto.setGroupName(groupEntity.getGroupName());
         dto.setCategoryList(categoryDtoList);
-        dto.setIsAdmin(memberEntity.getIsAdmin());
-        dto.setIsMember(memberEntity.getIsMember());
+
         return dto;
     }
 
     public AdminResponseDto admin(String token, Integer groupId) {
-        //사용자 정보 확인
-        //groupId로 groupName, root_category_Id 찾기
-        //root_category_ID로 자식 카테고리 Id, name 다 받아오기 -> 쿼리짜기
-        //root_category_ID가 parent_ID인 모든 category_closure 받아옴. 받아온 child_id로 같은 일 반복해서 한 리스트에 모아줌
-
         Integer userID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userID, groupId);
 
         AdminResponseDto dto = new AdminResponseDto();
 
         GroupEntity groupEntity = new GroupEntity();
         Optional<GroupEntity> groupSearchResult = havrutaDao.findGroupById(groupId);
 
-        if(groupSearchResult.isPresent()) {
+        if(groupSearchResult.isPresent()) {//그룹 검색 결과 확인
             groupEntity = groupSearchResult.get();
         }else {
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
 
         List<CategoryClosureEntity> categoryClosureEntityList = havrutaDao.findClosuresByRootId(groupEntity.getRootCategoryId().getCategoryId());
+        if(categoryClosureEntityList.isEmpty()) {
+            throw new NoCategoryException("No Category Closure", ErrorCode.NO_CATEGORY_ERROR);
+        }
         List<CategoryIdDto> categoryIdDtoList = new ArrayList<CategoryIdDto>();
         for(CategoryClosureEntity categoryClosureEntity : categoryClosureEntityList){
             CategoryEntity categoryEntity = new CategoryEntity();
@@ -339,7 +353,7 @@ public class HavrutaServiceImpl implements HavrutaService {
             if(categorySerachResult.isPresent()) {//멤버 검색 결과 확인
                 categoryEntity = categorySerachResult.get();
             }else {
-                throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+                throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
             }
             CategoryIdDto categoryIdDto = new CategoryIdDto();
             categoryIdDto.setCategoryId(categoryEntity.getCategoryId());
@@ -354,25 +368,29 @@ public class HavrutaServiceImpl implements HavrutaService {
     }
 
     public AdminMembersResponseDto adminMembers(String token, Integer groupId) {
-        //사용자 정보 확인 및 isAdmin
-        //groupId로 member_Table에서 user_ID 찾고 is_Member에 따라 다른 리스트에 넣기
         Integer userID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userID, groupId);
 
         AdminMembersResponseDto dto = new AdminMembersResponseDto();
 
         GroupEntity groupEntity = new GroupEntity();
         Optional<GroupEntity> searchResult = havrutaDao.findGroupById(groupId);
 
-        if(searchResult.isPresent()) {
+        if(searchResult.isPresent()) {//그룹 검색 결과 확인
             groupEntity = searchResult.get();
         }else {
-            throw new NoGroupException("There is No Group", ErrorCode.NO_GROUP_ERROR);
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
-
-        List<MemberEntity> memberEntityList = havrutaDao.findMembersByGroupId(groupId);
 
         List<MemberDto> MemberDtoList = new ArrayList<MemberDto>();
         List<UserDto> UserDtoList = new ArrayList<UserDto>();
+        List<MemberEntity> memberEntityList = havrutaDao.findMembersByGroupId(groupId);
+        if(memberEntityList.isEmpty()){
+            dto.setMemberList(MemberDtoList);
+            dto.setJoinList(UserDtoList);
+
+            return dto;
+        }
 
         for(MemberEntity memberEntity : memberEntityList){
             Optional<UserEntity> optionalUserEntity = havrutaDao.findUserById(memberEntity.getUserEntity().getUserId());
@@ -393,6 +411,9 @@ public class HavrutaServiceImpl implements HavrutaService {
                     UserDtoList.add(userDto);
                 }
             }
+            else{
+                throw new NoUserException("No Such Memeber in User", ErrorCode.NO_USER_ERROR);
+            }
         }
 
         dto.setMemberList(MemberDtoList);
@@ -405,6 +426,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //사용자 정보 확인
         //groupId와 newAdminId로 members에서 튜플 찾아서 isAdmin 바꿔주기
         Integer userID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(userID, groupId);
 
         Boolean result = havrutaDao.designateAdmin(newAdminId, groupId);
 
@@ -423,6 +445,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //사용자 정보 확인
         //groupId와 userId로 members에서 튜플 찾아서 제거
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.dropMember(userId, groupId);
 
@@ -442,6 +465,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //groupId와 userId로 members에서 튜플 찾아서 isMember 바꿔주기
 
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.confirm(userId, groupId);
 
@@ -461,6 +485,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //groupId로 그룹 찾아서 삭제
 
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.deleteGroup(groupId);
 
@@ -480,6 +505,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         //groupId로 그룹 찾아서 새이름을 변경
 
         Integer myUserID = jwtUtil.extractUserId(token);
+        checkUserGroupAdmin(myUserID, groupId);
 
         Boolean result = havrutaDao.updateGroup(newGroupName, groupId);
 
@@ -532,8 +558,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         }
 
         if (flag) {
-            /* TODO: exception handling */
-            responseDto.setMessage("Same category name already exists");
+            throw new SameCategoryNameException("Same category name already exists", ErrorCode.CATEGORY_NAME_ERROR);
         }
 
         /* 5. repository tasks */
@@ -614,15 +639,23 @@ public class HavrutaServiceImpl implements HavrutaService {
         }
 
         /* add to category problem */
-        for(Integer i : problemIdList){
+        for(Integer i : problemIdList) {
+            Optional<GroupEntity> optionalGroupEntity = groupRepository.findById(groupId);
+            Optional<ProblemEntity> optionalProblemEntity = problemRepository.findById(i);
+            if (optionalGroupEntity.isEmpty()) {
+                throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
+            }
+            if (optionalProblemEntity.isEmpty()) {
+                throw new NoProblemException("No Problem", ErrorCode.NO_PROBLEM_ERROR);
+            }
             categoryProblemRepository.save(
                     new CategoryProblemEntity(
                             new CategoryProblemId(
-                                    groupRepository.findById(groupId).get().getRootCategoryId().getCategoryId(),
+                                    optionalGroupEntity.get().getRootCategoryId().getCategoryId(),
                                     i
                             ),
-                            groupRepository.findById(groupId).get().getRootCategoryId(),
-                            problemRepository.findById(i).get()
+                            optionalGroupEntity.get().getRootCategoryId(),
+                            optionalProblemEntity.get()
 
                     )
             );
@@ -653,6 +686,9 @@ public class HavrutaServiceImpl implements HavrutaService {
         /* 4. repository tasks */
         /* Update category name */
         Optional<CategoryEntity> target = categoryRepository.findById(categoryId);
+        if(target.isEmpty()){
+            throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
+        }
         target.get().setCategoryName(categoryInfoDto.getCategoryName());
         categoryRepository.save(target.get());
         /* update categoryClosureRepository */
@@ -760,9 +796,13 @@ public class HavrutaServiceImpl implements HavrutaService {
         checkUserGroupMember(userId, groupId, false);
         /* 3. repository tasks */
 
-        GroupEntity groupEntity = groupRepository.findById(groupId).get();
+        Optional<GroupEntity> optionalGroupEntity = groupRepository.findById(groupId);
 
-        memberRepository.save(new MemberEntity(new MemberId(userId, groupId), userRepository.findById(userId).get(), groupEntity, 0, 0));
+        if(optionalGroupEntity.isEmpty()){
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
+        }
+
+        memberRepository.save(new MemberEntity(new MemberId(userId, groupId), userRepository.findById(userId).get(), optionalGroupEntity.get(), 0, 0));
 
         return responseDto;
     }
@@ -820,9 +860,13 @@ public class HavrutaServiceImpl implements HavrutaService {
         /* 4-1. problem repo */
         ProblemEntity problemEntity = new ProblemEntity();
 
-        UserEntity userEntity = userRepository.findById(userId).get();
+        Optional<UserEntity> optionalUserEntity = userRepository.findById(userId);
 
-        problemEntity.setUserId(userEntity);
+        if(optionalUserEntity.isEmpty()){
+            throw new NoUserException("No User", ErrorCode.NO_USER_ERROR);
+        }
+
+        problemEntity.setUserId(optionalUserEntity.get());
         problemEntity.setProblemType(problemRequestDto.getProblemType());
         problemEntity.setProblemQuestion(problemRequestDto.getProblemQuestion());
         problemEntity.setProblemAnswer(problemRequestDto.getProblemAnswer());
@@ -847,6 +891,11 @@ public class HavrutaServiceImpl implements HavrutaService {
         for(CategoryIdRequestDto c : problemRequestDto.getCategoryIdList()){
             CategoryProblemEntity categoryProblemEntity = new CategoryProblemEntity();
 
+            /* TODO: if error here, several ways to handle it.
+                1: undo the tasks done above, which means that none of the categories added
+                2: set a flag that error occured, and go on. After loop ended, throw an exception (would be better if we can send the failed categories to client)
+                3: throw exception right away. (not a good way)
+             */
             CategoryEntity categoryEntity = categoryRepository.findById(c.getCategoryId()).get();
 
             categoryProblemRepository.save(new CategoryProblemEntity(new CategoryProblemId(), categoryEntity, problemEntityResult));
@@ -862,7 +911,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
 
         if (groupEntity.isEmpty()) {
-            /* TODO: exception handling */
+            throw new NoGroupException("No Group", ErrorCode.NO_GROUP_ERROR);
         }
     }
 
@@ -873,10 +922,13 @@ public class HavrutaServiceImpl implements HavrutaService {
         Optional<MemberEntity> memberEntity = memberRepository.findById(new MemberId(userId, groupId));
 
         if(memberEntity.isEmpty()){
-            /* TODO: exception handling */
+            throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
+        }
+        else if(memberEntity.get().getIsMember().equals(0)){
+            throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
         }
         else if(memberEntity.get().getIsAdmin().equals(0)){
-            /* TODO: exception handling */
+            throw new NotAdminException("Not Admin", ErrorCode.NOT_ADMIN_ERROR);
         }
     }
 
@@ -898,7 +950,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         }
 
         if (!found) {
-            /* TODO: exception handling */
+            throw new NoCategoryException("No Category", ErrorCode.NO_CATEGORY_ERROR);
         }
     }
 
@@ -910,16 +962,16 @@ public class HavrutaServiceImpl implements HavrutaService {
 
         if(flag) {
             if (memberEntity.isEmpty()) {
-                /* TODO: exception handling */
+                throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
             } else if (memberEntity.get().getIsMember().equals(0)) {
-                /* TODO: exception handling */
+                throw new NotMemberException("Not Member", ErrorCode.NOT_MEMBER_ERROR);
             }
         }
         else{
             if (memberEntity.isPresent()) {
                 if (memberEntity.get().getIsMember().equals(1)) {
-                    /* TODO: exception handling */
                     /* already a member */
+                    throw new AlreadyMemberException("Already Member", ErrorCode.ALREADY_MEMBER_ERROR);
                 }
             }
         }
@@ -930,7 +982,7 @@ public class HavrutaServiceImpl implements HavrutaService {
         Optional<GroupEntity> groupEntity = groupRepository.findById(groupId);
 
         if(groupEntity.get().getRootCategoryId().getCategoryId().equals(categoryId)){
-            /* TODO: exception handling */
+            throw new RootCategoryException("Root Category", ErrorCode.ROOT_CATEGORY_ERROR);
         }
     }
 }
