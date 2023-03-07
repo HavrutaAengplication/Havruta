@@ -2,7 +2,7 @@
   <section class="test">
     <div v-on:click="kakaoLoginBtn">카카오 연동</div>
     <div>
-      <button @click="loginBtn">TestButton</button>
+      <!-- <button @click="loginBtn">TestButton</button> -->
     </div>
   </section>
 </template>
