@@ -5,7 +5,7 @@
       <h1>새로운 문제 생성</h1>
       <div>
         <label for="category">문제 카테고리 : </label>
-        <select id="category" v-model="selectedCategory" multiple>
+        <select id="category" v-model="selectedCategories" multiple>
           <option v-for="category in categories" :key="category.categoryId" :value="category.categoryName" @click="assignCategory()">{{ category.categoryName }}</option>
         </select>
         <div> 선택된 카테고리 : {{ selectedCategories }}</div>
@@ -79,13 +79,19 @@ export default {
     upload(e){
       let ImageFile = e.target.files
       let url=URL.createObjectURL(ImageFile[0])
-      this.images.push(url)
+      this.images.push({
+        image: url
+      })
     },
     assignCategory() {
-      this.selectedCategories.push(this.selectedCategory)
+      this.selectedCategories.push({
+        categoryId : this.selectedCategory
+      })
     },
     addChoice() {
-      this.choices.push(this.newChoiceContent)
+      this.choices.push({
+        item : this.newChoiceContent
+      })
       this.newChoiceContent = ""
       this.openNewChoice = false
     },
@@ -115,7 +121,7 @@ export default {
       put(`${BASE_URL}/mypage/problems/${this.problemId}`, {
         headers : this.headers,
         body : {
-          categoryList : this.categories,
+          categoryIdList : this.categories,
           problemQuestion : this.questionName,
           problemType : this.selectedQuestionType,
           problemCandidate : this.choices,

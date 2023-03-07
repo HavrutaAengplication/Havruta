@@ -178,27 +178,37 @@ public class HavrutaServiceImpl implements HavrutaService {
 
             myProblemDto.setProblemQuestion(problemEntity.getProblemQuestion());
 
+//            List<ItemDto> itemDtoList = new ArrayList<>();
+//            Map<Integer, String> map = problemEntity.getProblemCandidate();
+//            if(map != null) {
+//                map.forEach((key, value) -> {
+//                    ItemDto itemDto = new ItemDto();
+//                    itemDto.setItem(value);
+//                    itemDtoList.add(itemDto);
+//                });
+//            }
             List<ItemDto> itemDtoList = new ArrayList<>();
-            Map<Integer, String> map = problemEntity.getProblemCandidate();
-            if(map != null) {
-                map.forEach((key, value) -> {
-                    ItemDto itemDto = new ItemDto();
-                    itemDto.setItem(value);
-                    itemDtoList.add(itemDto);
-                });
+            for(Map.Entry<Integer, String> mapEntry : problemEntity.getProblemCandidate().entrySet()){
+                itemDtoList.add(new ItemDto(mapEntry.getValue()));
             }
+
+
             myProblemDto.setProblemCandidate(itemDtoList);
 
             myProblemDto.setProblemAnswer(problemEntity.getProblemAnswer());
 
+//            List<ImageDto> imageDtoList = new ArrayList<>();
+//            map = problemEntity.getProblemCandidate();
+//            if(map != null) {
+//                map.forEach((key, value) -> {
+//                    ImageDto imageDto = new ImageDto();
+//                    imageDto.setImage(value);
+//                    imageDtoList.add(imageDto);
+//                });
+//            }
             List<ImageDto> imageDtoList = new ArrayList<>();
-            map = problemEntity.getProblemCandidate();
-            if(map != null) {
-                map.forEach((key, value) -> {
-                    ImageDto imageDto = new ImageDto();
-                    imageDto.setImage(value);
-                    imageDtoList.add(imageDto);
-                });
+            for(Map.Entry<Integer, String> mapEntry : problemEntity.getProblemImage().entrySet()){
+                imageDtoList.add(new ImageDto(mapEntry.getValue()));
             }
             myProblemDto.setProblemImage(imageDtoList);
 
