@@ -1,10 +1,10 @@
 <template>
   <div>
     <h1>My Questions</h1>
-    <div v-for="question in questions" :key="question.problemQuestion">
+    <div v-for="(question, index) in questions" :key="index">
       {{ question.problemQuestion }}
       <button @click="OpenModifyPopUp"> MODIFY </button>
-      <button @click="QDelete(question.id)"> DELETE </button>
+      <button @click="QDelete()"> DELETE </button>
     </div>
   </div>
 </template>
@@ -23,7 +23,12 @@ export default {
   data() {
     return {
       questions : [],
-      problemID : 0,
+      problemID : 1,
+    }
+  },
+  computed : {
+    problemId() {
+      return this.problemId
     }
   },
   methods: {
@@ -31,17 +36,15 @@ export default {
       axios.get(`${BASE_URL}/mypage/problems`, {
         headers: HEADERS,
       }).then(response => {
-        this.questions = response.data.problemList
+        console.log(response.data)
+        this.questions = response.data.myProblemDtoList
       }).catch(error => {
         alert(error)
       });
     },
     QDelete(){
-      let params = {}
-      let headers = {"Authorization" : "temp"};
-      axios.delete(`${BASE_URL}/mypage/problems/${this.problemId}`, {
-        params: params,
-        headers: headers
+      axios.delete(`${BASE_URL}/mypage/problems/` + this.problemID, {
+        headers: HEADERS
       }).then(response => {
         console.log(response)
       }).catch(error => {

@@ -78,30 +78,24 @@ export default {
     upload(e){
       let ImageFile = e.target.files
       let url=URL.createObjectURL(ImageFile[0])
-      this.images.push(url)
+      this.images.push({
+        image: url
+      })
     },
     assignCategory() {
-      this.selectedCategories.push(this.selectedCategory)
+      this.selectedCategories.push({
+        categoryId: this.selectedCategory
+      })
     },
     addChoice() {
-      this.choices.push(this.newChoiceContent)
+      this.choices.push({
+        item: this.newChoiceContent
+      })
       this.newChoiceContent = ""
       this.openNewChoice = false
     },
     submitQuestion() {
-      const question = {
-        category: this.selectedCategory,
-        name: this.questionName,
-        type: this.selectedQuestionType,
-        content: this.questionContent,
-      };
-      if (this.selectedQuestionType === "multiple-choice") {
-        question.choice = this.choices;
-      } else {
-        question.shortAnswer = this.shortAnswer;
-      }
       this.$emit('close-modal');
-      console.log(question);
 
       if (this.selectedQuestionType == "multiple-choices"){
         this.answer = this.checkedChoices
@@ -115,6 +109,7 @@ export default {
         headers : this.headers,
         body : {
           categoryIdList : this.categories,
+          problemQuestion : this.questionName,
           problemType : this.selectedQuestionType,
           problemCandidate : this.choices,
           problemAnswer : this.answer,
