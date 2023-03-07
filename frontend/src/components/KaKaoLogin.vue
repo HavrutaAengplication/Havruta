@@ -9,18 +9,20 @@
 
 <script>
 import axios from 'axios'
+import {BASE_URL} from "@/config";
 export default {
   name: "KakaoLogin",
+  data() {
+    return {
+      kakaoEmail : "",
+    }
+  },
   mounted() {
     window.Kakao.init('bcf53bc5ac6b74d28a8b6f659566e773')
     // Kakao Developers에서 요약 정보 -> JavaScript 키
 
   },
   methods: {
-    loginBtn() {
-        axios.get("https://kauth.kakao.com/")
-    },
-
     kakaoLoginBtn:function(){
       const token = window.Kakao.Auth.getAccessToken();
       if (token) {
@@ -47,6 +49,8 @@ export default {
             },
             success: async function (response) {
               console.log(response);
+              console.log(response.kakao_account);
+              this.kakaoEmail = response.kakao_account.email;
             },
             fail: function (error) {
               console.log(error)
@@ -57,6 +61,14 @@ export default {
           console.log(error)
         },
       })
+      axios
+          .get(`${BASE_URL}/users/login`, {
+            "email" : this.kakaoEmail
+          })
+          .then(response => {
+            console.log(response.userName);
+            console.log(response.headers.token);
+          })
     }
   }
 }
