@@ -41,16 +41,17 @@ public class UsersController {
             2. email로 users 테이블에서 userId, userName 가져오기
             3. userId 로 JwtToken 생성
         */
-        UserNameDto dto = havrutaService.login(req);
-        final String jwt = jwtUtil.generateToken(1);
+        UserNameDto userNameDto = new UserNameDto();
+        UserDto userDto = havrutaService.login(req);
+        final String jwt = jwtUtil.generateToken(userDto.getUserId());
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + jwt);
-
+        userNameDto.setUserName(userDto.getUserName());
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .headers(headers)
                 .location(URI.create("/targetpage"))
-                .body(dto);
+                .body(userNameDto);
     }
 
     @DeleteMapping("/logout")

@@ -57,7 +57,7 @@ public class HavrutaServiceImpl implements HavrutaService {
             3. email + reqbody.userName 으로 users에 저장
         */
         ResponseDto dto = new ResponseDto();
-        String email = "EmailFromGoogleToken3";
+        String email = reqbody.getEmail();
         Optional<UserEntity> userEntity = havrutaDao.signUp(email ,reqbody.getUserName());
         if(userEntity.isPresent()){
             dto.setMessage("success");
@@ -68,12 +68,14 @@ public class HavrutaServiceImpl implements HavrutaService {
         return dto;
     }
 
-    public UserNameDto login(LoginRequestDto req){
-        String userEmail = "EmailFromGoogleToken";
-        UserNameDto dto = new UserNameDto();
+    public UserDto login(LoginRequestDto req){
+        //String userEmail = "EmailFromGoogleToken";
+        String userEmail = req.getEmail();
+        UserDto dto = new UserDto();
         Optional<UserEntity> userEntity = havrutaDao.findByEmail(userEmail);
 
         if(userEntity.isPresent()) {
+            dto.setUserId(userEntity.get().getUserId());
             dto.setUserName(userEntity.get().getUserName());
         }
         else{
