@@ -17,7 +17,7 @@ export default {
   components:{
 
   },
-  mounted(){
+  created(){
     this.QGet();
   },
   data() {
@@ -31,8 +31,7 @@ export default {
       axios.get(`${BASE_URL}/mypage/problems`, {
         headers: HEADERS,
       }).then(response => {
-        const { data } = response
-        this.questions = data.problemList
+        this.questions = response.data.problemList
       }).catch(error => {
         alert(error)
       });
