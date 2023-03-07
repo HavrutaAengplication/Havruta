@@ -101,10 +101,11 @@ export default {
       axios.
         delete(`${BASE_URL}/groups/${this.groupId}`,
           {
-            headers: this.headers
+            headers: HEADERS
           })
           .then(response => {
             const data = response
+            this.$router.push({name: "MyPage"});
             console.log(data)
           })
           .catch(error => {

@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <loginBtn/>
-  </div>
+<!--  <div>-->
+<!--    <loginBtn/>-->
+<!--  </div>-->
   <div class="landing-page">
     <div class="upper-side">
       <div class="upper-left">
@@ -26,7 +26,7 @@
 
 <script>
 import Popup from '@/components/CreateGroup.vue'
-import LoginBtn from '@/components/KaKaoLogin.vue'
+// import LoginBtn from '@/components/KaKaoLogin.vue'
 import axios from 'axios'
 import groupData from '@/assets/groupData.json'
 import {BASE_URL} from "@/config";
@@ -34,7 +34,7 @@ import {BASE_URL} from "@/config";
 export default {
   components:{
     Popup,
-    LoginBtn,
+    // LoginBtn,
   },
   data() {
     return {
