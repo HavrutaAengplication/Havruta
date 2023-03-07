@@ -228,9 +228,19 @@ public class HavrutaServiceImpl implements HavrutaService {
 
             problemEntity.get().setProblemType(problemDto.getProblemType());
             problemEntity.get().setProblemQuestion(problemDto.getProblemQuestion());
-            //problemEntity.get().setProblemCandidate(problemDto.getProblemCandidate());
+            Map<Integer, String> candidateMap = new HashMap<>();
+            int cnt = 0;
+            for(ItemDto itemDto : problemDto.getProblemCandidate()){
+                candidateMap.put(cnt++, itemDto.getItem());
+            }
+            problemEntity.get().setProblemCandidate(candidateMap);
             problemEntity.get().setProblemAnswer(problemDto.getProblemAnswer());
-            //problemEntity.get().setProblemImage(problemDto.getProblemImage());
+            Map<Integer, String> imageMap = new HashMap<>();
+            cnt = 0;
+            for(ImageDto imageDto : problemDto.getProblemImage()){
+                imageMap.put(cnt++, imageDto.getImage());
+            }
+            problemEntity.get().setProblemImage(imageMap);
             havrutaDao.changeProblem(problemEntity.get());
             dto.setMessage("success");
         }

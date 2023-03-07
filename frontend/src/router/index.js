@@ -19,7 +19,7 @@ const routes = [
     { path: '/groups/:groupId/categories/:categoryId', component: CategoryProblems},
     { path: '/groups/:groupId/admin', name: 'admin', component: GroupAdmin},
     { path: '/groups/:groupId/members', component: MemberManagement},
-    { path: "/problems", name: "MyProblem", component: MyProblems},
+    { path: "/mypage/problems", name: "MyProblem", component: MyProblems},
     { path: "/groups", name: "GroupPage", component: GroupPage},
     { path: "/groups/:groupId/problems", component: CreateProblem },
     { path: "/mypage/problems/:problemId", component: ModifyProblem },
