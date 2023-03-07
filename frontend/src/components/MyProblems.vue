@@ -1,8 +1,8 @@
 <template>
   <div>
     <h1>My Questions</h1>
-    <div v-for="question in questions" :key="question.id">
-      {{question.contents}}
+    <div v-for="question in questions" :key="question.problemQuestion">
+      {{ question.problemQuestion }}
       <button @click="OpenModifyPopUp"> MODIFY </button>
       <button @click="QDelete(question.id)"> DELETE </button>
     </div>
@@ -11,6 +11,7 @@
 
 <script>
 import axios from 'axios'
+import {BASE_URL, HEADERS} from "@/config";
 export default {
   name:"MyProblems",
   components:{
@@ -27,14 +28,11 @@ export default {
   },
   methods: {
     QGet(){
-      let params = {}
-      let headers = {"Authorization" : "temp"};
-      axios.get("http://localhost:8080/mypage/problems/", {
-        params: params,
-        headers: headers
+      axios.get(`${BASE_URL}/mypage/problems`, {
+        headers: HEADERS,
       }).then(response => {
         const { data } = response
-        this.questions = data.questions;
+        this.questions = data.problemList
       }).catch(error => {
         alert(error)
       });
@@ -42,7 +40,7 @@ export default {
     QDelete(){
       let params = {}
       let headers = {"Authorization" : "temp"};
-      axios.delete("http://localhost:8080/mypage/problems/" + this.problemID, {
+      axios.delete(`${BASE_URL}/mypage/problems/${this.problemId}`, {
         params: params,
         headers: headers
       }).then(response => {

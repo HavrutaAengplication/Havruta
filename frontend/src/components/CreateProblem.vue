@@ -114,7 +114,7 @@ export default {
       post(`${BASE_URL}/groups/${this.groupId}/problems`, {
         headers : this.headers,
         body : {
-          categoryList : this.categories,
+          categoryIdList : this.categories,
           problemType : this.selectedQuestionType,
           problemCandidate : this.choices,
           problemAnswer : this.answer,
@@ -143,7 +143,7 @@ export default {
     },
   },
   created() {
-    axios.get(`${BASE_URL}/groups/${this.groupId}/problems`,
+    axios.get(`${BASE_URL}/groups/${this.groupId}`,
         {
           headers: HEADERS
         }).then(response => {
